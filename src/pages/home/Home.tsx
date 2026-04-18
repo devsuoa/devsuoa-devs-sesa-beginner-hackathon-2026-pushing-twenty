@@ -1,4 +1,3 @@
-import Button from "../../components/button/Button";
 import styles from "./Home.module.css";
 import {useState} from "react";
 import LevelComponent from "../../components/LevelComponent";
