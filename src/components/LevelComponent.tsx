@@ -118,19 +118,12 @@ function getExpectedTrace(level: number, taskText: string): ExpectedStep[] {
 }
 
 // ---- component ----
-export default function LevelComponent() {
-  const [selectedLevel, setSelectedLevel] = useState(2);
+export default function LevelComponent({selectedLevel, onClose}) {
   const [output, setOutput] = useState("Waiting for code...");
   const [isError, setIsError] = useState<boolean | null>(null);
 
   const config = LEVEL_CONFIGS[selectedLevel] ?? LEVEL_CONFIGS[2];
   const expectedTrace = getExpectedTrace(selectedLevel, config.task);
-
-  const handleLevelSelect = (level: number) => {
-    setSelectedLevel(level);
-    setOutput("Waiting for code...");
-    setIsError(null);
-  };
 
   const handleOutput = (text: string, error: boolean) => {
     setOutput(text);
@@ -145,7 +138,17 @@ export default function LevelComponent() {
       <div className="flex w-full max-w-[1600px] mx-auto px-8 gap-10">
 
         {/* level select */}
-        <LevelSelect active={selectedLevel} onSelect={handleLevelSelect} />
+        <button
+            onClick={onClose}
+            style={{
+              backgroundColor: "#3A3A3A",
+              boxShadow: "0 6px 0 #1A1A1A",
+              cursor: "default",
+            }}
+            className={`w-20 h-20 rounded-2xl flex items-center justify-center flex-shrink-0 hover:brightness-110 active:brightness-90`}
+          >
+            <img src={`/x.png`} alt={`X`} className="h-12 w-12 object-contain" />
+          </button>
 
         {/* main content */}
         <div className="flex-1 flex flex-col gap-6">

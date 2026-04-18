@@ -47,8 +47,9 @@ export default function Home() {
                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[90vh] z-50">
                         <LevelComponent
                         // key={mountKey}
-                        // onClose={() => handleClose()}
-                        // lvl={lvlNum}
+                          selectedLevel={1}
+                          onClose={() => handleClose()}
+                          
                         />
                     </div>
 
