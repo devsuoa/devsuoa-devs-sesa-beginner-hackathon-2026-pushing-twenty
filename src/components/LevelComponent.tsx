@@ -1,11 +1,4 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { generatePlanetLanguage } from "../language/generator/generatePlanetLanguage";
-import { parseAlien } from "../language/parse/parseAlien";
-import { renderPython } from "../language/render/renderPython";
-import { renderAlien } from "../language/render/renderAlien";
-import { parsePythonWithTreeSitter } from "../language/parse/parsePythonWithTreeSitter";
-import type { ProgramNode } from "../language/types";
-import { validateAlienSource } from "../language/validate/validateAlienSource";
 import OutputComponent from './OutputComponent'
 import InfoComponent from './InfoComponent'
 
@@ -122,11 +115,11 @@ sys.stdout = io.StringIO()
   }
 
   return (
-    <div className="w-screen h-screen flex gap-10 p-4 font-mono overflow-hidden">
-      <div className="flex gap-4 p-4 w-6/7 mx-auto">
+    //<div className="w-screen h-screen flex gap-10 p-4 font-mono overflow-hidden">
+    //  <div className="flex gap-4 p-4 w-6/7 mx-auto">
 
-        <div className="flex-1 bg-[#2a2a2a] rounded-2xl p-3 flex flex-col gap-3">
-          <InfoComponent />
+    //    <div className="flex-1 bg-[#2a2a2a] rounded-2xl p-3 flex flex-col gap-3">
+    //      <InfoComponent />
     <div className="w-screen h-screen flex gap-4 p-4 bg-[#0a0f2e] font-mono overflow-hidden">
 
       {/* Left panel */}
