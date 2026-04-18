@@ -43,7 +43,7 @@ export default function LevelComponent({ onClose, lvl }: LevelProps) {
         {/* X button */}
         <button
           onClick={handleClose}
-          className="absolute top-9 right-38 text-white text-xl leading-none"
+          className="absolute top-9 right-36 text-white text-xl leading-none"
         >
           ✕
         </button>

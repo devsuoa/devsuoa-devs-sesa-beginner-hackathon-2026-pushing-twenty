@@ -56,7 +56,7 @@ const InfoComponent = ({ seed }: { seed: number }) => {
         <div className="flex gap-3">
         {/* Python */}
         <div className="m-5 flex-1 bg-[#3a7bd5] rounded-2xl overflow-hidden">
-            <div className="bg-[#2d5fa8] text-white text-s text-center py-2 tracking-widest font-bold">
+            <div className="bg-[#2d5fa8] text-white text-sm text-center py-2 tracking-widest font-bold">
             *** PYTHON CODE ***
             </div>
             <div className="bg-[#4a8be0] m-2 rounded-xl p-3">
@@ -66,7 +66,7 @@ const InfoComponent = ({ seed }: { seed: number }) => {
 
         {/* Alien */}
         <div className="m-5 flex-1 bg-[#2d7a3a] rounded-2xl overflow-hidden">
-            <div className="bg-[#1f5c29] text-white text-s text-center py-2 tracking-widest font-bold">
+            <div className="bg-[#1f5c29] text-white text-sm text-center py-2 tracking-widest font-bold">
             *** ALIEN CODE ***
             </div>
             <div className="bg-[#3a9447] transition m-2 rounded-xl p-3">
@@ -76,7 +76,7 @@ const InfoComponent = ({ seed }: { seed: number }) => {
         </div>
 
         {/* Goal text */}
-        <div className="text-gray-300 text-m leading-relaxed text-center" >
+        <div className="text-gray-300 text-md leading-relaxed text-center" >
         <p className="mb-2">The code above are equivalent.</p>
         <p className="mb-2">YOUR GOAL: Write a program in ALIEN CODE that outputs the<br />
         SQUARE OF THE LENGTH OF nums.</p>
