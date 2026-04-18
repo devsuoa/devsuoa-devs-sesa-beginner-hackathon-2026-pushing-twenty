@@ -137,6 +137,7 @@ export function main(canvas, onPlanetFocus) {
     // Zoom out — resets focus and starts the camera tween back to the initial position.
     // Called both by canvas clicks on empty space and externally (e.g. the ✕ button).
     function zoomOut() {
+        console.log("Hi");
         focusedPlanet = null;
         paused        = false;
         tweening      = true;

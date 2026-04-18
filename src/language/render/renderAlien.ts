@@ -420,5 +420,5 @@ export function renderAlien(
   program: ProgramNode,
   lang: GeneratedPlanetLanguage,
 ): string {
-  return program.body.map((stmt) => renderStatement(stmt, lang, 0)).join("\n\n");
+  return program.body.map((stmt) => renderStatement(stmt, lang, 0)).join("\n");
 }

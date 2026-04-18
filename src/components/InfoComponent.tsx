@@ -4,18 +4,13 @@ import { renderAlien } from "../language/render/renderAlien";
 import { generatePlanetLanguage } from "../language/generator/generatePlanetLanguage";
 import { parsePythonWithTreeSitter } from "../language/parse/parsePythonWithTreeSitter";
 import type { ProgramNode } from "../language/types";
+import { squareLengthLevel } from "../levels/squareLengthLevel";
 
-const InfoComponent = ({ seed }: { seed: number }) => {
+const InfoComponent = ({ seed, taskComplete }: { seed: number, taskComplete: boolean }) => {
   const [exampleAst, setExampleAst] = useState<ProgramNode | null>(null);
   const [exampleAlien, setExampleAlien] = useState("");
   const [exampleError, setExampleError] = useState("");
-  const sourcePython = `
-    nums = [1,2,3]
-    sum = 0
-    for i in nums:
-      sum += i
-    print(sum)
-    `.trim();
+  const sourcePython = squareLengthLevel.pythonCode;
 
   // Use a fixed seed for this level for now
     const lang = useMemo(() => generatePlanetLanguage(seed), []);
@@ -85,7 +80,7 @@ const InfoComponent = ({ seed }: { seed: number }) => {
         </div>
 
         <div className="group mb-2 h-10 flex">
-            <img className="h-40 ml-40" src="glorpcat1.png"/>
+            <img className="h-40 ml-40" src={taskComplete ? "ubeen.png" : "glorpcat1.png"}/>
         </div>
     </div>
   )
