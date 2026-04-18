@@ -3,7 +3,7 @@ import Image from 'react'
 const InfoComponent = () => {
   return (
     <div className="flex-1 bg-[#2a2a2a] rounded-2xl p-3 flex flex-col gap-3">
-
+        
         {/* Title */}
         <h1 className="text-center text-5xl tracking-widest text-green-400">
             GLORPYTHON

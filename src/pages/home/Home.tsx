@@ -4,14 +4,22 @@ import LevelComponent from "../../components/LevelComponent";
 // The home page of the application.
 
 
-function Home() {
+export default function Home() {
+  const [isVisible, setIsVisible] = useState(false);
+  const [mountKey, setMountKey] = useState(0);
 
-    return (
-        <div>
-            <LevelComponent />
-        </div>
-        
-    );
+  const handleToggle = () => {
+    if (!isVisible) setMountKey(k => k + 1);
+    setIsVisible(v => !v);
+  };
+
+  return (
+    <div>
+      <button onClick={handleToggle}>
+        {isVisible ? 'Hide' : 'Show'} Component
+      </button>
+
+      {isVisible && <LevelComponent key={mountKey} />}
+    </div>
+  );
 }
-
-export default Home;
