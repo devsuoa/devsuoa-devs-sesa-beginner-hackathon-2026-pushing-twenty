@@ -1,7 +1,8 @@
 import styles from "./Home.module.css";
 import { useState, useEffect, useRef } from "react";
 import LevelComponent from "../../components/LevelComponent";
-import { main } from "./solarsystem.js";
+import { main } from "./js/main.js";
+// import { main } from "./solarsystem.js";
 import { useMouseMoving } from "../../hooks/useMouseMoving.js";
 export default function Home() {
     const lvlNum = 4;
