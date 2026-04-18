@@ -5,7 +5,7 @@ import { generatePlanetLanguage } from "../language/generator/generatePlanetLang
 import { parsePythonWithTreeSitter } from "../language/parse/parsePythonWithTreeSitter";
 import type { ProgramNode } from "../language/types";
 
-const InfoComponent = () => {
+const InfoComponent = ({ seed }: { seed: number }) => {
   const [exampleAst, setExampleAst] = useState<ProgramNode | null>(null);
   const [exampleAlien, setExampleAlien] = useState("");
   const [exampleError, setExampleError] = useState("");
@@ -18,7 +18,7 @@ const InfoComponent = () => {
     `.trim();
 
   // Use a fixed seed for this level for now
-    const lang = useMemo(() => generatePlanetLanguage(2), []);
+    const lang = useMemo(() => generatePlanetLanguage(seed), []);
   
   useEffect(() => {
     let cancelled = false;

@@ -5,10 +5,10 @@ import LevelComponent from "../../components/LevelComponent";
 
 
 function Home() {
-
+    const lvlNum = 4;
     return (
         <div>
-            <LevelComponent />
+            <LevelComponent lvl={lvlNum} />
         </div>
         
     );

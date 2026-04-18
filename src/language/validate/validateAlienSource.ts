@@ -91,6 +91,21 @@ function isWordLikeIdentifier(value: string): boolean {
   return /^[A-Za-z_~!?#^:-][A-Za-z0-9_~!?#^:-]*$/.test(value);
 }
 
+function getLineBounds(tokens: AlienToken[], index: number): { start: number; end: number } {
+  let start = index;
+  let end = index;
+
+  while (start > 0 && tokens[start - 1].type !== "newline") {
+    start--;
+  }
+
+  while (end < tokens.length - 1 && tokens[end + 1].type !== "newline") {
+    end++;
+  }
+
+  return { start, end };
+}
+
 function looksLikeDefinitionContext(
   tokens: AlienToken[],
   index: number,
@@ -105,70 +120,69 @@ function looksLikeDefinitionContext(
     return true;
   }
 
-  // Assignment target patterns
   switch (lang.syntax.assignmentStyle) {
     case "equals":
-    case "arrow":
-    case "word_infix":
-      if (next && next.type === "operator") {
-        return false;
-      }
-      if (
+      return !!(
         next &&
-        (
-          (lang.syntax.assignmentStyle === "equals" && next.value === "=") ||
-          (lang.syntax.assignmentStyle === "arrow" && next.value === (lang.symbols.assignmentToken ?? "<-"))
-        )
-      ) {
-        return true;
-      }
-      if (
-        lang.syntax.assignmentStyle === "word_infix" &&
+        next.type === "operator" &&
+        next.value === "="
+      );
+
+    case "arrow":
+      return !!(
+        next &&
+        next.type === "operator" &&
+        next.value === (lang.symbols.assignmentToken ?? "<-")
+      );
+
+    case "word_infix":
+      return !!(
         next &&
         next.type === "identifier" &&
         next.value === lang.symbols.assignmentWord
-      ) {
-        return true;
-      }
-      break;
+      );
 
     case "word_prefix":
-      if (
+      return !!(
         prev &&
         prev.type === "identifier" &&
         prev.value === lang.symbols.assignmentWord
-      ) {
-        return true;
-      }
-      break;
+      );
 
-    case "word_suffix":
-      if (
-        next &&
-        next.type !== "newline" &&
-        tokens[index + 2] &&
-        tokens[index + 2].type === "identifier" &&
-        tokens[index + 2].value === lang.symbols.assignmentWord
-      ) {
-        return true;
+    case "word_suffix": {
+      const { start, end } = getLineBounds(tokens, index);
+
+      // Must be the first token on the line
+      if (index !== start) {
+        return false;
       }
-      break;
+
+      // Last token on the line must be the assignment word
+      const lastToken = tokens[end];
+      return !!(
+        lastToken &&
+        lastToken.type === "identifier" &&
+        lastToken.value === lang.symbols.assignmentWord
+      );
+    }
 
     case "set_prefix":
-      if (prev && prev.type === "identifier" && prev.value === "set") {
-        return true;
-      }
-      break;
+      return !!(
+        prev &&
+        prev.type === "identifier" &&
+        prev.value === "set"
+      );
 
     case "put_in":
-      // target comes after "in"
-      if (prev && prev.type === "identifier" && prev.value === "in") {
-        return true;
-      }
-      break;
-  }
+      return !!(
+        prev &&
+        prev.type === "identifier" &&
+        prev.value === "in"
+      );
 
-  return false;
+    default:
+      return false;
+  }
 }
 
 export function validateAlienSource(

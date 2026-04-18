@@ -4,16 +4,16 @@ import { parseAlien } from "../language/parse/parseAlien";
 import { renderPython } from "../language/render/renderPython";
 import { validateAlienSource } from "../language/validate/validateAlienSource";
 
-const OutputComponent = () => {
+const OutputComponent = ({ seed }: { seed: number }) => {
   const [code, setCode] = useState("")
   const [output, setOutput] = useState("")
   const [translatedPython, setTranslatedPython] = useState("");
   const [pyodideReady, setPyodideReady] = useState(false)
   const pyodideRef = useRef<any>(null)
-  const outputExpected = "5"
-  
+  const outputExpected = "9"
+
   // Use a fixed seed for this level for now
-  const lang = useMemo(() => generatePlanetLanguage(2), []);
+  const lang = useMemo(() => generatePlanetLanguage(seed), []);
 
   useEffect(() => {
     const loadPyodide = async () => {
@@ -55,6 +55,7 @@ const OutputComponent = () => {
       await pyodideRef.current.runPythonAsync(`
 import sys, io
 sys.stdout = io.StringIO()
+nums = [1, 2, 3]
       `);
 
       // 4. Run translated Python
