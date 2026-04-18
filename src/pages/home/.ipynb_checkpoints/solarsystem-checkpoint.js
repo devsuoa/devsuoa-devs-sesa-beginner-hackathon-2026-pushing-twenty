@@ -1,4 +1,4 @@
-import * as THREE from "three";
+timport * as THREE from "three";
 
 const ZOOM_DIST    = 5;       // how close the camera gets (in planet radii + offset)
 const TWEEN_SPEED  = 0.07;    // lerp factor for camera movement

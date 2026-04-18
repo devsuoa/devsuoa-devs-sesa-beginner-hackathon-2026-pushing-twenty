@@ -41,7 +41,7 @@ export function setupParallax( canvas ) {
 
 export function setupFocus( canvas, camera, planets, basePosition ) {
     
-    const state = {
+    const focus = {
         raycaster:    new THREE.Raycaster(),
         pointer:      new THREE.Vector2(),
         paused:       false,
@@ -49,32 +49,38 @@ export function setupFocus( canvas, camera, planets, basePosition ) {
         cameraTarget:  null,
         lookAtTarget:  null,
         tweening:      false,
+        popupFired: false,
     };
 
     canvas.addEventListener('click', e => {
         const rect = canvas.getBoundingClientRect();
-        state.pointer.x =  ((e.clientX - rect.left) / rect.width)  * 2 - 1;
-        state.pointer.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
-        state.raycaster.setFromCamera(state.pointer, camera);
+        focus.pointer.x =  ((e.clientX - rect.left) / rect.width)  * 2 - 1;
+        focus.pointer.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
+        focus.raycaster.setFromCamera(focus.pointer, camera);
 
         const meshes = planets.map(p => p.mesh);
-        const hits   = state.raycaster.intersectObjects(meshes);
+        const hits   = focus.raycaster.intersectObjects(meshes);
 
         if (hits.length > 0) {
-            state.focusedPlanet = planets.find(p => p.mesh === hits[0].object);
-            state.paused   = true;
-            state.tweening  = true;
+            focus.focusedPlanet = planets.find(p => p.mesh === hits[0].object);
+            focus.paused   = true;
+            focus.tweening  = true;
+            focus.popupFired = false;
         } 
         else {
-            state.focusedPlanet = null;
-            state.paused   = false;
-            state.tweening  = true;
-            state.cameraTarget  = basePosition.clone();
-            state.lookAtTarget  = new THREE.Vector3(0, 0, 0);
+            zoomOut();
         }
     });
 
-    return state;
+    function zoomOut() {
+        focus.focusedPlanet = null;
+        focus.paused        = false;
+        focus.tweening      = true;
+        focus.cameraTarget  = basePosition.clone();
+        focus.lookAtTarget  = new THREE.Vector3(0, 0, 0);
+    }
+
+    return { focus, zoomOut };
     
 }
 

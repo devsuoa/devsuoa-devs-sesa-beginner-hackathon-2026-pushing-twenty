@@ -6,7 +6,7 @@ import { createScene } from "./scene.js";
 const ZOOM_DIST = 5;
 const TWEEN_SPEED = 0.07;
 
-export function main( canvas ) {
+export function main( canvas, onPlanetFocus ) {
 
     // --- Initialisation ---
 
@@ -18,11 +18,10 @@ export function main( canvas ) {
 
     const { targetOffset, currentOffset } = setupParallax( canvas );
 
-    const focus = setupFocus( canvas, camera, planets, basePosition );
+    const { focus, zoomOut } = setupFocus( canvas, camera, planets, basePosition );
 
     const currentLookAt = new THREE.Vector3(0, 0, 0);
     const origin = new THREE.Vector3(0, 0, 0);
-
 
     
     // --- Render loop ---
@@ -51,7 +50,9 @@ export function main( canvas ) {
             advancePlanetOrbits()
         
             function rotateSun() {
-                if (!focus.paused) sun.rotation.y += 0.003;
+                if (!focus.paused) {
+                    sun.rotation.y += 0.003;
+                }
             }
             
             function advancePlanetOrbits() {
@@ -102,6 +103,12 @@ export function main( canvas ) {
             
                 if (camera.position.distanceTo(focus.cameraTarget) < 0.05) {
                     focus.tweening = false;
+                    if (focus.focusedPlanet && !focus.popupFired) {
+                        focus.popupFired = true;
+                        if (typeof onPlanetFocus === 'function') {
+                            onPlanetFocus();
+                    }
+                }
                 };
             
             }
@@ -148,5 +155,7 @@ export function main( canvas ) {
         }
         
     }
+
+    return { zoomOut };
     
 }
