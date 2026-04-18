@@ -54,6 +54,8 @@ export function main(canvas) {
     ];
 
     const planets = planetData.flatMap(d => {
+    
+        
         const pts = [];
         for (let i = 0; i <= 128; i++) {
             const a = (i / 128) * Math.PI * 2;
@@ -100,6 +102,10 @@ export function main(canvas) {
         const starMat = new THREE.PointsMaterial({ color: 0xcceeff, size: 0.5, sizeAttenuation: true });
         scene.add(new THREE.Points(starGeo, starMat));
     }
+
+
+
+    
 
     // Mouse parallax
     let targetOffset = { x: 0, y: 0 };
