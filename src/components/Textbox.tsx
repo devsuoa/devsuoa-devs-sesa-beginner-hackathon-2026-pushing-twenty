@@ -14,7 +14,7 @@ export default function Textbox(props: TextboxProps) {
                 <img src={"/" + props.headerimage} alt={props.headerimage} className="relative h-12 w-auto object-contain" />
             </div>
             <div style={{ backgroundColor: props.darkcol }} className="p-4 pb-12 mb-4 mx-4 rounded-lg">
-                <p style={{ fontFamily: "'Fira Code', monospace", color: "white"}} className="text-xl">{props.text}</p>
+                <p style={{ fontFamily: "'Fira Code', monospace", color: "white", whiteSpace: "pre-wrap"}} className="text-xl">{props.text}</p>
             </div>
         </div>
     )
