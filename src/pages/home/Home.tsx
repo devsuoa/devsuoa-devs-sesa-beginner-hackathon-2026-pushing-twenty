@@ -2,7 +2,7 @@ import styles from "./Home.module.css";
 import { useState, useEffect, useRef } from "react";
 import LevelComponent from "../../components/LevelComponent";
 import { main } from "./solarsystem.js";
-
+import { useMouseMoving } from "../../hooks/useMouseMoving.js";
 export default function Home() {
     const lvlNum = 4;
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -10,6 +10,7 @@ export default function Home() {
 
     const [isVisible, setIsVisible] = useState(false);
     const [mountKey, setMountKey] = useState(0);
+    const isMouseMoving = useMouseMoving(800); // fade back in after 800ms of no movement
 
     const handleOpen = () => {
         setMountKey(k => k + 1);
@@ -29,6 +30,17 @@ export default function Home() {
 
     return (
         <div>
+            <header style={{
+                    transition: "opacity 0.6s ease",
+                    opacity: isMouseMoving ? 0 : 1,
+                    pointerEvents: isMouseMoving ? "none" : "auto",
+                }}
+            >
+                <div className={styles["header-brand"]}>
+                    
+                    <h1>glorpython</h1>
+                </div>
+            </header>
             <section className="relative w-full h-screen">
                 {isVisible && (
 
