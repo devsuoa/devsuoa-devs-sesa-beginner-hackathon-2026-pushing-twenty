@@ -38,22 +38,24 @@ export default function Home() {
             }}
             >
                 <div className={styles["header-brand"]}>
-                    <h1>glorpython</h1>
+                    <img src="/logo.png" alt="" />
                 </div>
             </header>
             <section className="relative w-full h-screen">
-                {isVisible && (
-
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[90vh] z-50">
-                        <LevelComponent
-                        // key={mountKey}
-                          selectedLevel={1}
-                          onClose={() => handleClose()}
-                          
-                        />
-                    </div>
-
-                )}
+                <div
+                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90vw] z-50"
+                    style={{
+                        maxHeight: isVisible ? "100vh" : "0",
+                        overflow: "hidden",
+                        transition: "max-height 0.3s ease",
+                    }}
+                >
+  <LevelComponent
+    key={mountKey}
+    selectedLevel={1}
+    onClose={() => handleClose()}
+  />
+</div>
                 <canvas ref={canvasRef} className={styles.solarsystem}></canvas>
             </section>
         </div>
