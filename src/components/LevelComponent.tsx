@@ -6,6 +6,8 @@ import { renderAlien } from "../language/render/renderAlien";
 import { parsePythonWithTreeSitter } from "../language/parse/parsePythonWithTreeSitter";
 import type { ProgramNode } from "../language/types";
 import { validateAlienSource } from "../language/validate/validateAlienSource";
+import OutputComponent from './OutputComponent'
+import InfoComponent from './InfoComponent'
 
 export default function LevelComponent() {
   const [code, setCode] = useState("")
@@ -120,6 +122,11 @@ sys.stdout = io.StringIO()
   }
 
   return (
+    <div className="w-screen h-screen flex gap-10 p-4 font-mono overflow-hidden">
+      <div className="flex gap-4 p-4 w-6/7 mx-auto">
+
+        <div className="flex-1 bg-[#2a2a2a] rounded-2xl p-3 flex flex-col gap-3">
+          <InfoComponent />
     <div className="w-screen h-screen flex gap-4 p-4 bg-[#0a0f2e] font-mono overflow-hidden">
 
       {/* Left panel */}
@@ -153,47 +160,9 @@ sys.stdout = io.StringIO()
             </div>
           </div>
         </div>
-
-        {/* Goal text */}
-        <div className="text-gray-300 text-xs leading-relaxed">
-          <p className="mb-2">The code above are equivalent.</p>
-          <p className="mb-2">YOUR GOAL: Write a program in<br />
-          ALIEN CODE that outputs the<br />
-          SQUARE OF THE LENGTH OF nums.</p>
-          <p className="mb-2">Assume nums is already defined.</p>
-          <p>(Hint: you cannot use any +-*/ or **)</p>
+        <div className="flex-1 bg-[#2a2a2a] rounded-2xl p-3 flex flex-col gap-3">
+          <OutputComponent />
         </div>
-
-      </div>
-
-      {/* Right panel */}
-      <div className="flex-1 bg-[#2a2a2a] rounded-2xl p-5 flex flex-col gap-3">
-
-        {/* Editor */}
-        <textarea
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          onKeyDown={handleKeyDown}
-          spellCheck={false}
-          placeholder="write code here!"
-          className="flex-1 bg-[#3a3a3a] text-gray-300 text-sm font-mono p-4 rounded-xl resize-none outline-none placeholder-gray-500"
-        />
-
-        {/* Submit button */}
-        <button
-          onClick={runCode}
-          disabled={!pyodideReady}
-          className="bg-green-600 hover:bg-green-500 disabled:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg text-sm w-fit"
-        >
-          {pyodideReady ? "submit" : "loading python..."}
-        </button>
-
-        {/* Output */}
-        <div className="text-gray-300 text-sm font-bold tracking-widest">OUTPUT:</div>
-        <div className="bg-[#3a3a3a] rounded-xl p-4 text-gray-400 text-sm font-mono min-h-[60px]">
-          {output || <span className="text-gray-600">output</span>}
-        </div>
-
       </div>
 
     </div>
