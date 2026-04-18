@@ -9,7 +9,7 @@ interface LevelProps {
 
 export default function LevelComponent({ onClose, lvl }: LevelProps) {
   const [isClosing, setIsClosing] = useState(false);
-
+  const [taskComplete, setTaskComplete] = useState(false);
   const handleClose = () => setIsClosing(true);
 
   const handleAnimationEnd = () => {
@@ -49,8 +49,8 @@ export default function LevelComponent({ onClose, lvl }: LevelProps) {
           ✕
         </button>
 
-        <InfoComponent seed={seed} />
-        <OutputComponent seed={seed} />
+        <InfoComponent seed={seed} taskComplete={taskComplete}/>
+        <OutputComponent seed={seed} onComplete={setTaskComplete} />
       </div>
     </div>
   );

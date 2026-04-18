@@ -29,12 +29,6 @@ export default function Home() {
 
     return (
         <div>
-            <header>
-                <div className={styles["header-brand"]}>
-                    <h1>glorpython</h1>
-                </div>
-            </header>
-
             <section className="relative w-full h-screen">
                 {isVisible && (
 
