@@ -24,6 +24,11 @@ export function main( canvas, onPlanetFocus ) {
     const origin = new THREE.Vector3(0, 0, 0);
 
     
+    function getLevel() {
+        if (!focus.focusedPlanet) return 0;
+        return focus.focusedPlanet.level;
+    }
+    
     // --- Render loop ---
     
     requestAnimationFrame(render);
@@ -36,8 +41,6 @@ export function main( canvas, onPlanetFocus ) {
 
         renderer.render(scene, camera);
         requestAnimationFrame(render); 
-
-
         
         // --- Done! (the rest is defining these functions) ---
 
@@ -85,14 +88,12 @@ export function main( canvas, onPlanetFocus ) {
             function updateFocusTarget() {
                 
                 if (!focus.focusedPlanet) return;
-            
                 const planetPosition = focus.focusedPlanet.mesh.position;
                 const planetDirection = planetPosition.clone().normalize();
             
                 focus.cameraTarget = planetPosition.clone().add(planetDirection.multiplyScalar(focus.focusedPlanet.radius + ZOOM_DIST));
                 focus.cameraTarget.y += focus.focusedPlanet.radius * 0.8;
                 focus.lookAtTarget = planetPosition.clone();
-                
             }
             
             function updateCameraTween () {
@@ -156,6 +157,6 @@ export function main( canvas, onPlanetFocus ) {
         
     }
 
-    return { zoomOut };
+    return { zoomOut, getLevel };
     
 }

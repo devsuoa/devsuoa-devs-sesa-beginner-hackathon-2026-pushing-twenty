@@ -5,10 +5,9 @@ import { main } from "./js/main.js";
 import { useMouseMoving } from "../../hooks/useMouseMoving.js";
 
 export default function Home() {
-    const lvlNum = 4;
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const zoomOutRef = useRef<(() => void) | null>(null);
-
+    const getLevelRef = useRef<(() => number) | null>(null);
     const [isVisible, setIsVisible] = useState(false);
     const [mountKey, setMountKey] = useState(0);
     const isMouseMoving = useMouseMoving(2500);
@@ -26,8 +25,9 @@ export default function Home() {
 
     useEffect(() => {
         if (!canvasRef.current) return;
-        const { zoomOut } = main(canvasRef.current, handleOpen);
+        const { zoomOut, getLevel } = main(canvasRef.current, handleOpen);
         zoomOutRef.current = zoomOut;
+        getLevelRef.current = getLevel;
     }, []);
 
     return (
@@ -49,7 +49,7 @@ export default function Home() {
                         <LevelComponent
                         key={mountKey}
                         onClose={() => handleClose()}
-                        lvl={lvlNum}
+                        lvl={getLevelRef.current ? getLevelRef.current() : 0}
                         />
                     </div>
 
