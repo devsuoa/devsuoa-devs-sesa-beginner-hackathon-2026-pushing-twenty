@@ -16,11 +16,6 @@ export default function Home() {
         setIsVisible(true);
     };
 
-    const handleClose = () => {
-        setIsVisible(false);
-        zoomOutRef.current?.();
-    };
-
     useEffect(() => {
         if (!canvasRef.current) return;
         const { zoomOut } = main(canvasRef.current, handleOpen);
@@ -34,9 +29,7 @@ export default function Home() {
                     <h1>glorpython</h1>
                 </div>
             </header>
-            <button className="ml-5 mt-5 absolute border-4 rounded-3xl p-5" onClick={handleOpen} disabled={isVisible}>
-                Glorp
-            </button>
+
             <section className="relative w-full h-screen">
                 {isVisible && (
 
