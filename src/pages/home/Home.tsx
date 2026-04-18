@@ -54,7 +54,7 @@ export default function Home() {
                     <LevelComponent
                     key={mountKey}
                     onClose={() => handleClose()}
-                    lvl={getLevelRef.current ? getLevelRef.current() : 0}
+                    selectedLevel={getLevelRef.current ? getLevelRef.current() : 1}
                     />
                 </div>
                 <canvas ref={canvasRef} className={styles.solarsystem}></canvas>
