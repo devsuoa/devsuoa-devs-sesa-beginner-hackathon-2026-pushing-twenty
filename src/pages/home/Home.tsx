@@ -3,7 +3,7 @@ import {useState, useEffect, useRef} from "react";
 import LevelComponent from "../../components/LevelComponent";
 import { main } from "./solarsystem.js";
 
-function Home() {
+export default function Home() {
     
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -33,11 +33,13 @@ function Home() {
                 onClose={() => setIsVisible(false)}
                 />
             )}
+
             <header>
                 <div className={styles["header-brand"]}>
-                    <h1>Glorpython</h1>
+                    <h1>glorpython</h1>
                 </div>
             </header>
+
             <canvas ref={canvasRef} className={styles.solarsystem}></canvas>
         </div>
     );
