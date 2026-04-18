@@ -9,7 +9,7 @@ interface TextboxProps {
 
 export default function Textbox(props: TextboxProps) {
     return (
-        <div>
+        <div style={{ backgroundColor: "red" }}>
             {props.text}
         </div>
     )
