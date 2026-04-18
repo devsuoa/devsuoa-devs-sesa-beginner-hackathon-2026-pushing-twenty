@@ -15,9 +15,9 @@ export default function LevelComponent({ onClose, lvl }: LevelProps) {
   const handleAnimationEnd = () => {
     if (isClosing) onClose();
   };
-  const seed = lvl*71 - 10;
+  const seed = lvl * 71 - 10;
   return (
-    <div className="flex items-center justify-center min-h-screen w-full container">
+    <div className="flex items-center justify-center h-full w-full">
       <style>{`
         @keyframes expandDown {
           from { transform: scaleY(0); }
@@ -35,14 +35,10 @@ export default function LevelComponent({ onClose, lvl }: LevelProps) {
           animation: collapseUp 0.2s ease-in forwards;
           transform-origin: center;
         }
-        .container {
-          position: absolute;
-          z-index: 1000;
-          margin: 0px;
-        }
+
       `}</style>
       <div
-        className={`${isClosing ? 'collapse-up' : 'expand-down'} w-4/5 h-screen flex gap-10 p-4 font-mono overflow-hidden`}
+        className={`${isClosing ? 'collapse-up' : 'expand-down'} w-full h-full flex gap-10 p-4 font-mono overflow-hidden`}
         onAnimationEnd={handleAnimationEnd}
       >
         {/* X button */}
@@ -53,7 +49,7 @@ export default function LevelComponent({ onClose, lvl }: LevelProps) {
           ✕
         </button>
 
-        <InfoComponent seed={seed}/>
+        <InfoComponent seed={seed} />
         <OutputComponent seed={seed} />
       </div>
     </div>
