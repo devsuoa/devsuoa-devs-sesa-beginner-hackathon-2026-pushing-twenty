@@ -1,30 +1,44 @@
 import styles from "./Home.module.css";
-import {useState} from "react";
+import {useState, useEffect, useRef} from "react";
 import LevelComponent from "../../components/LevelComponent";
-// The home page of the application.
+import { main } from "./solarsystem.js";
 
+function Home() {
+    
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-export default function Home() {
-  const [isVisible, setIsVisible] = useState(false);
-  const [mountKey, setMountKey] = useState(0);
+    useEffect(() => {
+        
+        if (!canvasRef.current) return;
+        
+        main(canvasRef.current);
+        }, []);
 
-  const handleOpen = () => {
-    setMountKey(k => k + 1);
-    setIsVisible(true);
-  };
+    const [isVisible, setIsVisible] = useState(false);
+    const [mountKey, setMountKey] = useState(0);
 
-  return (
-    <div>
-      <button className="ml-100 mt-80 absolute border-4 rounded-3xl p-5" onClick={handleOpen} disabled={isVisible}>
-        Glorp
-      </button>
+    const handleOpen = () => {
+        setMountKey(k => k + 1);
+        setIsVisible(true);
+    };
 
-      {isVisible && (
-        <LevelComponent
-          key={mountKey}
-          onClose={() => setIsVisible(false)}
-        />
-      )}
-    </div>
-  );
+    return (
+        <div>
+            <button className="ml-100 mt-80 absolute border-4 rounded-3xl p-5" onClick={handleOpen} disabled={isVisible}>
+                Glorp
+            </button>
+            {isVisible && (
+                <LevelComponent
+                key={mountKey}
+                onClose={() => setIsVisible(false)}
+                />
+            )}
+            <header>
+                <div className={styles["header-brand"]}>
+                    <h1>Glorpython</h1>
+                </div>
+            </header>
+            <canvas ref={canvasRef} className={styles.solarsystem}></canvas>
+        </div>
+    );
 }

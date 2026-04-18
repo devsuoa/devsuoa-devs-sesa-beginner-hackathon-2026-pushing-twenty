@@ -1,24 +1,29 @@
-import Button from "../../components/button/Button";
+import { useEffect, useRef } from "react";
+import { main } from "./solarsystem.js";
 import styles from "./Home.module.css";
-import {useState} from "react";
 
-// The home page of the application.
+function Home() {
+    
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
+    useEffect(() => {
+        
+        if (!canvasRef.current) return;
+        
+        main(canvasRef.current);
 
-// function Home() {
+    }, []);
 
-//     let [x, setX] = useState<number>(0);
-//     function print() {
-//         setX(a => a+1);
-//         console.log(`PRINTED: ${x}`);
-//     }
-
-//     return (
-//         <div>
-//             <header className="page"></header>
-//             <canvas id=""></canvas>
-//         </div>
-//     );
-// }
+    return (
+        <>
+            <header>
+                <div className={styles["header-brand"]}>
+                    <h1>Glorpython</h1>
+                </div>
+            </header>
+            <canvas ref={canvasRef} className={styles.solarsystem}></canvas>
+        </>
+    );
+}
 
 export default Home;
