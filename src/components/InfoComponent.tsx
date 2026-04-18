@@ -4,18 +4,13 @@ import { renderAlien } from "../language/render/renderAlien";
 import { generatePlanetLanguage } from "../language/generator/generatePlanetLanguage";
 import { parsePythonWithTreeSitter } from "../language/parse/parsePythonWithTreeSitter";
 import type { ProgramNode } from "../language/types";
+import { squareLengthLevel } from "../levels/squareLengthLevel";
 
-const InfoComponent = ({ seed }: { seed: number }) => {
+const InfoComponent = ({ seed, taskComplete }: { seed: number, taskComplete: boolean }) => {
   const [exampleAst, setExampleAst] = useState<ProgramNode | null>(null);
   const [exampleAlien, setExampleAlien] = useState("");
   const [exampleError, setExampleError] = useState("");
-  const sourcePython = `
-    nums = [1,2,3]
-    sum = 0
-    for i in nums:
-      sum += i
-    print(sum)
-    `.trim();
+  const sourcePython = squareLengthLevel.pythonCode;
 
   // Use a fixed seed for this level for now
     const lang = useMemo(() => generatePlanetLanguage(seed), []);
@@ -56,7 +51,7 @@ const InfoComponent = ({ seed }: { seed: number }) => {
         <div className="flex gap-3">
         {/* Python */}
         <div className="m-5 flex-1 bg-[#3a7bd5] rounded-2xl overflow-hidden">
-            <div className="bg-[#2d5fa8] text-white text-s text-center py-2 tracking-widest font-bold">
+            <div className="bg-[#2d5fa8] text-white text-sm text-center py-2 tracking-widest font-bold">
             *** PYTHON CODE ***
             </div>
             <div className="bg-[#4a8be0] m-2 rounded-xl p-3">
@@ -66,7 +61,7 @@ const InfoComponent = ({ seed }: { seed: number }) => {
 
         {/* Alien */}
         <div className="m-5 flex-1 bg-[#2d7a3a] rounded-2xl overflow-hidden">
-            <div className="bg-[#1f5c29] text-white text-s text-center py-2 tracking-widest font-bold">
+            <div className="bg-[#1f5c29] text-white text-sm text-center py-2 tracking-widest font-bold">
             *** ALIEN CODE ***
             </div>
             <div className="bg-[#3a9447] transition m-2 rounded-xl p-3">
@@ -76,7 +71,7 @@ const InfoComponent = ({ seed }: { seed: number }) => {
         </div>
 
         {/* Goal text */}
-        <div className="text-gray-300 text-m leading-relaxed text-center" >
+        <div className="text-gray-300 text-md leading-relaxed text-center" >
         <p className="mb-2">The code above are equivalent.</p>
         <p className="mb-2">YOUR GOAL: Write a program in ALIEN CODE that outputs the<br />
         SQUARE OF THE LENGTH OF nums.</p>
@@ -85,7 +80,7 @@ const InfoComponent = ({ seed }: { seed: number }) => {
         </div>
 
         <div className="group mb-2 h-10 flex">
-            <img className="h-40 ml-40" src="glorpcat1.png"/>
+            <img className="h-40 ml-40" src={taskComplete ? "ubeen.png" : "glorpcat1.png"}/>
         </div>
     </div>
   )

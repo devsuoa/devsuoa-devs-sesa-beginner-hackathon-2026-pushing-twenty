@@ -9,15 +9,15 @@ interface LevelProps {
 
 export default function LevelComponent({ onClose, lvl }: LevelProps) {
   const [isClosing, setIsClosing] = useState(false);
-
+  const [taskComplete, setTaskComplete] = useState(false);
   const handleClose = () => setIsClosing(true);
 
   const handleAnimationEnd = () => {
     if (isClosing) onClose();
   };
-  const seed = lvl*71 - 10;
+  const seed = lvl * 71 - 10;
   return (
-    <>
+    <div className="flex items-center justify-center h-full w-full">
       <style>{`
         @keyframes expandDown {
           from { transform: scaleY(0); }
@@ -35,26 +35,23 @@ export default function LevelComponent({ onClose, lvl }: LevelProps) {
           animation: collapseUp 0.2s ease-in forwards;
           transform-origin: center;
         }
+
       `}</style>
       <div
-        className={`${isClosing ? 'collapse-up' : 'expand-down'} w-screen h-screen flex gap-10 p-4 font-mono overflow-hidden`}
+        className={`${isClosing ? 'collapse-up' : 'expand-down'} w-full h-full flex gap-10 p-4 font-mono overflow-hidden`}
         onAnimationEnd={handleAnimationEnd}
       >
         {/* X button */}
         <button
           onClick={handleClose}
-          className="absolute top-9 right-38 text-white text-xl leading-none"
+          className="absolute top-9 right-10 text-white text-xl leading-none"
         >
           ✕
         </button>
 
-        <div className="flex-1 bg-[#2a2a2a] rounded-2xl p-3 flex flex-col gap-3">
-          <InfoComponent seed={seed}/>
-        </div>
-        <div className="flex-1 bg-[#2a2a2a] rounded-2xl p-3 flex flex-col gap-3">
-          <OutputComponent seed={seed} />
-        </div>
+        <InfoComponent seed={seed} taskComplete={taskComplete}/>
+        <OutputComponent seed={seed} onComplete={setTaskComplete} />
       </div>
-    </>
+    </div>
   );
 }
