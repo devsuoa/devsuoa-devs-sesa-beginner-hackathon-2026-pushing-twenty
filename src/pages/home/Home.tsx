@@ -16,6 +16,11 @@ export default function Home() {
         setIsVisible(true);
     };
 
+    const handleClose = () => {
+        setIsVisible(false);
+        zoomOutRef.current?.();
+    };
+
     useEffect(() => {
         if (!canvasRef.current) return;
         const { zoomOut } = main(canvasRef.current, handleOpen);
@@ -36,7 +41,7 @@ export default function Home() {
                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[90vh] z-50">
                         <LevelComponent
                         key={mountKey}
-                        onClose={() => setIsVisible(false)}
+                        onClose={() => handleClose()}
                         lvl={lvlNum}
                         />
                     </div>

@@ -8,7 +8,7 @@
 }
 }
 
-animation: var(--animate-bounce); /* bounce 1s infinite */
+/*animation: var(--animate-bounce);*/ /* bounce 1s infinite */
 
 @keyframes bounce {
   0%, 100% {
