@@ -4,11 +4,19 @@ const ZOOM_DIST    = 5;       // how close the camera gets (in planet radii + of
 const TWEEN_SPEED  = 0.07;    // lerp factor for camera movement
 
 export function main(canvas, onPlanetFocus) {
-
+    const loader = new THREE.TextureLoader();
     const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 2.0;
+
+    const createRepeatingTexture = (path, repeatX = 2, repeatY = 1) => {
+        const tex = loader.load(path);
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(repeatX, repeatY);
+        return tex;
+    };
 
     const fov = 45;
     const aspect = canvas.clientWidth / canvas.clientHeight;
@@ -37,20 +45,19 @@ export function main(canvas, onPlanetFocus) {
     // Sun
     const sunGeo = new THREE.SphereGeometry(4.5, 64, 64);
     const sunMat = new THREE.MeshStandardMaterial({
-        color: 0xe8ffff,
-        emissive: 0x88ffee,
-        emissiveIntensity: 3.2,
-        roughness: 0.0,
-        metalness: 0.0
+        map: createRepeatingTexture('/textures/glorptest.png', 3, 3),
+        emissiveMap: loader.load('/textures/suntexture.webp'), // same tex drives the glow
+        emissive: 0x91ffaf,
+        emissiveIntensity: 0.1,
     });
     const sun = new THREE.Mesh(sunGeo, sunMat);
     scene.add(sun);
 
     // Planets
     const planetData = [
-        { radius: 1.1, orbitR: 14, speed: 0.8,  tilt: 0.2,  color: 0xff6644, emissive: 0x441100 },
-        { radius: 1.5, orbitR: 24, speed: 0.45, tilt: 0.35, color: 0x44aaff, emissive: 0x001133 },
-        { radius: 1.2, orbitR: 36, speed: 0.25, tilt: 0.15, color: 0x88dd55, emissive: 0x112200 },
+        { radius: 1.1, orbitR: 14, speed: 0.8,  tilt: 0.2,  color: 0xff6644, emissive: 0x441100, texture: '/textures/texture1.webp'},
+        { radius: 1.5, orbitR: 24, speed: 0.45, tilt: 0.35, color: 0x44aaff, emissive: 0x001133, texture: '/textures/texture2.webp' },
+        { radius: 1.2, orbitR: 36, speed: 0.25, tilt: 0.15, color: 0x88dd55, emissive: 0x112200, texture: '/textures/texture3.webp'},
     ];
 
     const planets = planetData.flatMap(d => {
@@ -72,9 +79,7 @@ export function main(canvas, onPlanetFocus) {
         return [0, 1, 2].map(i => {
             const geo = new THREE.SphereGeometry(d.radius, 36, 36);
             const mat = new THREE.MeshStandardMaterial({
-                color: d.color,
-                emissive: d.emissive,
-                emissiveIntensity: 1.0,
+                map: loader.load(d.texture),
                 roughness: 0.65,
                 metalness: 0.05
             });

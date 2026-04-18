@@ -10,7 +10,8 @@ export default function Home() {
 
     const [isVisible, setIsVisible] = useState(false);
     const [mountKey, setMountKey] = useState(0);
-    const isMouseMoving = useMouseMoving(800); // fade back in after 800ms of no movement
+    const isMouseMoving = useMouseMoving(2500);
+    const hideUI = isMouseMoving || isVisible;
 
     const handleOpen = () => {
         setMountKey(k => k + 1);
@@ -31,13 +32,12 @@ export default function Home() {
     return (
         <div>
             <header style={{
-                    transition: "opacity 0.6s ease",
-                    opacity: isMouseMoving ? 0 : 1,
-                    pointerEvents: isMouseMoving ? "none" : "auto",
-                }}
+                transition: "opacity 0.4s ease",
+                opacity: hideUI ? 0 : 1,
+                pointerEvents: hideUI ? "none" : "auto",
+            }}
             >
                 <div className={styles["header-brand"]}>
-                    
                     <h1>glorpython</h1>
                 </div>
             </header>
