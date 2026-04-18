@@ -1,7 +1,9 @@
 import * as THREE from "three";
 
 export function createScene() {
-
+    
+    const loader = new THREE.TextureLoader();
+    
     const scene = new THREE.Scene();
     
     // Lighting
@@ -35,32 +37,45 @@ export function createScene() {
     // Sun
     const sunGeo = new THREE.SphereGeometry(4.5, 64, 64);
     const sunMat = new THREE.MeshStandardMaterial({
-        color: 0xe8ffff,
-        emissive: 0x88ffee,
-        emissiveIntensity: 3.2,
-        roughness: 0.0,
-        metalness: 0.0
+        map: createRepeatingTexture('/textures/glorptest.png', 3, 3),
+        emissiveMap: loader.load('/textures/suntexture.webp'), // same tex drives the glow
+        emissive: 0x91ffaf,
+        emissiveIntensity: 0.1,
     });
     const sun = new THREE.Mesh(sunGeo, sunMat);
     scene.add(sun);
 
+    function createRepeatingTexture(path, repeatX = 2, repeatY = 1) {
+        const tex = loader.load(path);
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(repeatX, repeatY);
+        return tex;
+    }
+
     // Planets
-    const planetLevels = [
-        { level: 1, radius: 1.1, orbitR: 14, speed: 0.8,  tilt: 0.2,  color: 0xff6644, emissive: 0x441100 },
-        { level: 2, radius: 1.5, orbitR: 24, speed: 0.45, tilt: 0.35, color: 0x44aaff, emissive: 0x001133 },
-        { level: 3, radius: 1.8, orbitR: 36, speed: 0.25, tilt: 0.15, color: 0x88dd55, emissive: 0x112200 },
+    const planetData = [
+        { level: 1, id: 1, radius: 1.1, orbitR: 14, speed:  0.8, angle:   0 * (Math.PI / 180), tilt: 0.2,  color: 0xff6644, emissive: 0x441100, texture: '/textures/texture1.webp'},
+        { level: 1, id: 2, radius: 1.1, orbitR: 14, speed:  0.8, angle: 120 * (Math.PI / 180),  tilt: 0.2,  color: 0xff6644, emissive: 0x441100, texture: '/textures/texture1.webp'},
+        { level: 1, id: 3, radius: 1.1, orbitR: 14, speed:  0.8, angle: 240 * (Math.PI / 180), tilt: 0.2,  color: 0xff6644, emissive: 0x441100, texture: '/textures/texture1.webp'},
+        { level: 2, id: 4, radius: 1.5, orbitR: 24, speed: 0.45, angle:   0 * (Math.PI / 180), tilt: 0.35, color: 0x44aaff, emissive: 0x001133, texture: '/textures/texture2.webp' },
+        { level: 2, id: 5, radius: 1.5, orbitR: 24, speed: 0.45, angle: 120 * (Math.PI / 180), tilt: 0.35, color: 0x44aaff, emissive: 0x001133, texture: '/textures/texture2.webp' },
+        { level: 2, id: 6, radius: 1.5, orbitR: 24, speed: 0.45, angle: 240 * (Math.PI / 180), tilt: 0.35, color: 0x44aaff, emissive: 0x001133, texture: '/textures/texture2.webp' },
+        { level: 3, id: 7, radius: 1.2, orbitR: 36, speed: 0.25, angle:   0 * (Math.PI / 180), tilt: 0.15, color: 0x88dd55, emissive: 0x112200, texture: '/textures/texture3.webp'},
+        { level: 3, id: 8, radius: 1.2, orbitR: 36, speed: 0.25, angle: 120 * (Math.PI / 180), tilt: 0.15, color: 0x88dd55, emissive: 0x112200, texture: '/textures/texture3.webp'},
+        { level: 3, id: 9, radius: 1.2, orbitR: 36, speed: 0.25, angle: 240 * (Math.PI / 180), tilt: 0.15, color: 0x88dd55, emissive: 0x112200, texture: '/textures/texture3.webp'},
     ];
 
-    const planets = planetLevels.flatMap(level => {
+    const planets = planetData.map(planet => {
         
         // Orbit path
         const pts = [];
         for (let i = 0; i <= 128; i++) {
             const theta = 2 * Math.PI * (i / 128) ;
             pts.push(new THREE.Vector3(
-                Math.cos(theta) * level.orbitR,
-                Math.sin(theta) * level.tilt * level.orbitR * 0.18,
-                Math.sin(theta) * level.orbitR
+                Math.cos(theta) * planet.orbitR,
+                Math.sin(theta) * planet.tilt * planet.orbitR * 0.18,
+                Math.sin(theta) * planet.orbitR
             ));
         }
         const orbitGeo = new THREE.BufferGeometry().setFromPoints(pts);
@@ -71,38 +86,25 @@ export function createScene() {
         });
         scene.add(new THREE.LineLoop(orbitGeo, orbitMat));
 
-        return [0, 1, 2].map(planet => {
-
-            // Each planet
-            const planetGeo = new THREE.SphereGeometry(level.radius, 36, 36);
-            const planetMat = new THREE.MeshStandardMaterial({
-                color: level.color,
-                emissive: level.emissive,
-                emissiveIntensity: 1.0,
-                roughness: 0.65,
-                metalness: 0.05
-            });
-            const mesh = new THREE.Mesh(planetGeo, planetMat);
-            scene.add(mesh);
-            
-            // Angular separation
-            const minSeparation = 2 * Math.PI * (120 / 360);
-            const maxSeparation = 2 * Math.PI * (240 / 360);
-            const p = Math.random()
-            let angle = planet * minSeparation + p * (maxSeparation - minSeparation)
-            
-            return {
-                id: `${level.level}-${planet}`,
-                mesh: mesh, 
-                angle: angle,
-                ...level,
-            }
-            
+        // Each planet
+        const planetGeo = new THREE.SphereGeometry(planet.radius, 36, 36);
+        const planetMat = new THREE.MeshStandardMaterial({
+            map: loader.load(planet.texture),
+            roughness: 0.65,
+            metalness: 0.05
         });
+        const mesh = new THREE.Mesh(planetGeo, planetMat);
+        scene.add(mesh);
+        
+        // Angular separation
+        planet.angle += (Math.random() - 0.5) * ( 2 * Math.PI * (90/360));
+        
+        return {
+            mesh, 
+            ...planet,
+        }
     });
-
 
     return {scene, sun, planets}
     
 }
-

@@ -37,14 +37,21 @@ export function createScene() {
     // Sun
     const sunGeo = new THREE.SphereGeometry(4.5, 64, 64);
     const sunMat = new THREE.MeshStandardMaterial({
-        color: 0xe8ffff,
-        emissive: 0x88ffee,
-        emissiveIntensity: 3.2,
-        roughness: 0.0,
-        metalness: 0.0
+        map: createRepeatingTexture('/textures/glorptest.png', 3, 3),
+        emissiveMap: loader.load('/textures/suntexture.webp'), // same tex drives the glow
+        emissive: 0x91ffaf,
+        emissiveIntensity: 0.1,
     });
     const sun = new THREE.Mesh(sunGeo, sunMat);
     scene.add(sun);
+
+    function createRepeatingTexture(path, repeatX = 2, repeatY = 1) {
+        const tex = loader.load(path);
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(repeatX, repeatY);
+        return tex;
+    }
 
     // Planets
     const planetData = [

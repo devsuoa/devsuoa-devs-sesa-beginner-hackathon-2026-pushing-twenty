@@ -5,10 +5,9 @@ import { main } from "./js/main.js";
 import { useMouseMoving } from "../../hooks/useMouseMoving.js";
 
 export default function Home() {
-    const lvlNum = 4;
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const zoomOutRef = useRef<(() => void) | null>(null);
-
+    const getLevelRef = useRef<(() => number) | null>(null);
     const [isVisible, setIsVisible] = useState(false);
     const [mountKey, setMountKey] = useState(0);
     const isMouseMoving = useMouseMoving(2500);
@@ -26,8 +25,9 @@ export default function Home() {
 
     useEffect(() => {
         if (!canvasRef.current) return;
-        const { zoomOut } = main(canvasRef.current, handleOpen);
+        const { zoomOut, getLevel } = main(canvasRef.current, handleOpen);
         zoomOutRef.current = zoomOut;
+        getLevelRef.current = getLevel;
     }, []);
 
     return (
@@ -39,21 +39,24 @@ export default function Home() {
             }}
             >
                 <div className={styles["header-brand"]}>
-                    <h1>glorpython</h1>
+                    <img src="/logo.png" alt="" />
                 </div>
             </header>
             <section className="relative w-full h-screen">
-                {isVisible && (
-
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[90vh] z-50">
-                        <LevelComponent
-                        key={mountKey}
-                        onClose={() => handleClose()}
-                        lvl={lvlNum}
-                        />
-                    </div>
-
-                )}
+                <div
+                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90vw] z-50"
+                    style={{
+                        maxHeight: isVisible ? "100vh" : "0",
+                        overflow: "hidden",
+                        transition: "max-height 0.3s ease",
+                    }}
+                >
+                    <LevelComponent
+                    key={mountKey}
+                    onClose={() => handleClose()}
+                    lvl={getLevelRef.current ? getLevelRef.current() : 0}
+                    />
+                </div>
                 <canvas ref={canvasRef} className={styles.solarsystem}></canvas>
             </section>
         </div>
