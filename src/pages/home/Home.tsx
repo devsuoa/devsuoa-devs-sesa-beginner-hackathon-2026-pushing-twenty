@@ -13,7 +13,7 @@ const LEVEL_CONFIGS: Record<number, {
   1: {
     pythonCode: `x = 3\ny = 3\nx += 2\ny -= x`,
     alienCode: `HI x, 3\nHI y, 3\nYAY x, 2\nNO y, x`,
-    task: `Translate this Python code into Alien code:\nx = 2\ny = 1\nz = x\nz -= x\nz += y`,
+    task: `Translate this Python code into Alien code:\nx = 2\ny = x\ny += x`,
   },
   2: {
     pythonCode: `x = 5\ny = x - 3\nz = x ** 2\nprint(z)`,
@@ -53,24 +53,26 @@ function evalPythonTaskL1(taskText: string): ExpectedStep[] {
     const subEq = line.match(/^([xyz])\s*-=\s*(.+)$/);
     const assign = line.match(/^([xyz])\s*=\s*(.+)$/);
 
+    const simpleToken = (expr: string) => {
+      const t = expr.trim();
+      return /^[xyz]$/.test(t) || /^[0-9]+$/.test(t) ? t : undefined;
+    };
+
     if (addEq) {
       const [, v, expr] = addEq;
       vars[v] = (vars[v] ?? 0) + evalExpr(expr);
-      trace.push({ kind: "assign", var: v, val: vars[v] });
+      trace.push({ kind: "assign", var: v, val: vars[v], srcToken: simpleToken(expr) });
     } else if (subEq) {
       const [, v, expr] = subEq;
       vars[v] = (vars[v] ?? 0) - evalExpr(expr);
-      trace.push({ kind: "assign", var: v, val: vars[v] });
+      trace.push({ kind: "assign", var: v, val: vars[v], srcToken: simpleToken(expr) });
     } else if (assign) {
       const [, v, expr] = assign;
       vars[v] = evalExpr(expr);
-      trace.push({ kind: "assign", var: v, val: vars[v] });
+      trace.push({ kind: "assign", var: v, val: vars[v], srcToken: simpleToken(expr) });
     }
   }
 
-  if (vars["z"] !== undefined) {
-    trace.push({ kind: "print", val: vars["z"] });
-  }
   return trace;
 }
 

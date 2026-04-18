@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 export type ExpectedStep =
-  | { kind: "assign"; var: string; val: number }
+  | { kind: "assign"; var: string; val: number; srcToken?: string }
   | { kind: "print"; val: number };
 
 interface CodeboxProps {
@@ -19,7 +19,7 @@ function approxEqual(a: number, b: number): boolean {
 }
 
 type AlienStep =
-  | { kind: "assign"; var: string; val: number; lineNum: number }
+  | { kind: "assign"; var: string; val: number; lineNum: number; srcToken?: string }
   | { kind: "print"; val: number; lineNum: number };
 
 function checkTrace(
@@ -37,6 +37,8 @@ function checkTrace(
       return `Alien Error [Line ${a.lineNum}]: Translation incorrect`;
     if (a.kind === "assign" && e.kind === "assign") {
       if (a.var !== e.var || !approxEqual(a.val, e.val))
+        return `Alien Error [Line ${a.lineNum}]: Translation incorrect`;
+      if (e.srcToken !== undefined && a.srcToken !== e.srcToken)
         return `Alien Error [Line ${a.lineNum}]: Translation incorrect`;
     }
     if (a.kind === "print" && e.kind === "print") {
@@ -96,44 +98,40 @@ function runLevel1(
     }
 
     vars[varName] = result;
-    alienTrace.push({ kind: "assign", var: varName, val: result, lineNum });
+    alienTrace.push({ kind: "assign", var: varName, val: result, lineNum, srcToken: valToken });
   }
-
-  if (vars["z"] === undefined)
-    return { output: "No output", error: true };
-
-  const lastLine = lines[lines.length - 1].lineNum;
-  alienTrace.push({ kind: "print", val: vars["z"], lineNum: lastLine });
 
   const traceErr = checkTrace(alienTrace, expectedTrace);
   if (traceErr) return { output: traceErr, error: true };
 
-  return { output: String(vars["z"]), error: false };
+  return { output: "Correct! Well done!", error: false };
 }
 
 // ---- Level 2: :) assignment, :( print ----
 // Expressions: only literal 1, vars x/y/z, operators +-*^, parens.
-function validateExprL2(expr: string): boolean {
+// Returns null if valid, or the offending token string if invalid.
+function validateExprL2(expr: string): string | null {
   const s = expr.replace(/\s/g, "");
-  if (s.length === 0 || s.includes("**")) return false;
+  if (s.length === 0) return expr.trim() || "empty";
+  if (s.includes("**")) return "**";
   let i = 0;
   while (i < s.length) {
     const ch = s[i];
     if ("xyz".includes(ch)) {
-      if (i + 1 < s.length && /[a-zA-Z]/.test(s[i + 1])) return false;
+      if (i + 1 < s.length && /[a-zA-Z]/.test(s[i + 1])) return ch + s[i + 1];
       i++;
     } else if (ch === "1") {
-      if (i + 1 < s.length && /[0-9]/.test(s[i + 1])) return false;
+      if (i + 1 < s.length && /[0-9]/.test(s[i + 1])) return ch + s[i + 1];
       i++;
     } else if (/[0-9]/.test(ch)) {
-      return false;
+      return ch;
     } else if ("+-*^()".includes(ch)) {
       i++;
     } else {
-      return false;
+      return ch;
     }
   }
-  return true;
+  return null;
 }
 
 function runLevel2(
@@ -170,8 +168,9 @@ function runLevel2(
     if (assignMatch) {
       const varName = assignMatch[1];
       const expr = assignMatch[2].trim();
-      if (!validateExprL2(expr))
-        return { output: `Alien Error [Line ${lineNum}]: Syntax Error`, error: true };
+      const badToken = validateExprL2(expr);
+      if (badToken !== null)
+        return { output: `Alien Error [Line ${lineNum}]: Syntax Error ("${badToken}" is not defined)`, error: true };
 
       const exprClean = expr.replace(/\s/g, "");
       for (const v of ["x", "y", "z"]) {
@@ -194,7 +193,13 @@ function runLevel2(
       continue;
     }
 
-    return { output: `Alien Error [Line ${lineNum}]: Syntax Error`, error: true };
+    const badCh = line.split("").find(ch => !/[\sxyz:()+\-*^1]/.test(ch));
+    return {
+      output: badCh
+        ? `Alien Error [Line ${lineNum}]: Syntax Error ("${badCh}" is not defined)`
+        : `Alien Error [Line ${lineNum}]: Syntax Error`,
+      error: true,
+    };
   }
 
   if (outputLines.length === 0)
@@ -203,7 +208,7 @@ function runLevel2(
   const traceErr = checkTrace(alienTrace, expectedTrace);
   if (traceErr) return { output: traceErr, error: true };
 
-  return { output: outputLines.join("\n"), error: false };
+  return { output: outputLines.join("\n") + "\n\nCorrect!", error: false };
 }
 
 // ---- Level 3: array init + copy ops + output ----
@@ -264,7 +269,7 @@ function runLevel3(
   if (expectedOutputStr && outputStr !== expectedOutputStr)
     return { output: "Alien Error: Translation incorrect", error: true };
 
-  return { output: outputStr, error: false };
+  return { output: outputStr + "\n\nCorrect!", error: false };
 }
 
 // ---- component ----
@@ -298,6 +303,7 @@ export default function Codebox(props: CodeboxProps) {
         value={code}
         onChange={(e) => setCode(e.target.value)}
         placeholder="Write alien code here!"
+        spellCheck={false}
         className="p-6 text-2xl mx-4 rounded-lg resize-none flex-1 min-h-0"
       />
 
