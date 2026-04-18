@@ -8,18 +8,23 @@ export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
   const [mountKey, setMountKey] = useState(0);
 
-  const handleToggle = () => {
-    if (!isVisible) setMountKey(k => k + 1);
-    setIsVisible(v => !v);
+  const handleOpen = () => {
+    setMountKey(k => k + 1);
+    setIsVisible(true);
   };
 
   return (
     <div>
-      <button onClick={handleToggle}>
-        {isVisible ? 'Hide' : 'Show'} Component
+      <button className="ml-100 mt-80 absolute border-4 rounded-3xl p-5" onClick={handleOpen} disabled={isVisible}>
+        Glorp
       </button>
 
-      {isVisible && <LevelComponent key={mountKey} />}
+      {isVisible && (
+        <LevelComponent
+          key={mountKey}
+          onClose={() => setIsVisible(false)}
+        />
+      )}
     </div>
   );
 }
