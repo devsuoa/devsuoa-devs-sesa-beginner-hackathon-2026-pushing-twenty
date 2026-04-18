@@ -17,7 +17,7 @@ export default function LevelComponent({ onClose, lvl }: LevelProps) {
   };
   const seed = lvl*71 - 10;
   return (
-    <>
+    <div className="flex items-center justify-center min-h-screen w-full container">
       <style>{`
         @keyframes expandDown {
           from { transform: scaleY(0); }
@@ -35,26 +35,27 @@ export default function LevelComponent({ onClose, lvl }: LevelProps) {
           animation: collapseUp 0.2s ease-in forwards;
           transform-origin: center;
         }
+        .container {
+          position: absolute;
+          z-index: 1000;
+          margin: 0px;
+        }
       `}</style>
       <div
-        className={`${isClosing ? 'collapse-up' : 'expand-down'} w-screen h-screen flex gap-10 p-4 font-mono overflow-hidden`}
+        className={`${isClosing ? 'collapse-up' : 'expand-down'} w-4/5 h-screen flex gap-10 p-4 font-mono overflow-hidden`}
         onAnimationEnd={handleAnimationEnd}
       >
         {/* X button */}
         <button
           onClick={handleClose}
-          className="absolute top-9 right-36 text-white text-xl leading-none"
+          className="absolute top-9 right-10 text-white text-xl leading-none"
         >
           ✕
         </button>
 
-        <div className="flex-1 bg-[#2a2a2a] rounded-2xl p-3 flex flex-col gap-3">
-          <InfoComponent seed={seed}/>
-        </div>
-        <div className="flex-1 bg-[#2a2a2a] rounded-2xl p-3 flex flex-col gap-3">
-          <OutputComponent seed={seed} />
-        </div>
+        <InfoComponent seed={seed}/>
+        <OutputComponent seed={seed} />
       </div>
-    </>
+    </div>
   );
 }

@@ -24,24 +24,24 @@ export default function Home() {
 
     return (
         <div>
-            <button className="ml-100 mt-80 absolute border-4 rounded-3xl p-5" onClick={handleOpen} disabled={isVisible}>
-                Glorp
-            </button>
-            {isVisible && (
-                <LevelComponent
-                key={mountKey}
-                onClose={() => setIsVisible(false)}
-                lvl={lvlNum}
-                />
-            )}
-
             <header>
                 <div className={styles["header-brand"]}>
                     <h1>glorpython</h1>
                 </div>
             </header>
-
-            <canvas ref={canvasRef} className={styles.solarsystem}></canvas>
+            <button className="ml-5 mt-5 absolute border-4 rounded-3xl p-5" onClick={handleOpen} disabled={isVisible}>
+                Glorp
+            </button>
+            <section className="">
+                {isVisible && (
+                    <LevelComponent
+                    key={mountKey}
+                    onClose={() => setIsVisible(false)}
+                    lvl={lvlNum}
+                    />
+                )}
+                <canvas ref={canvasRef} className={styles.solarsystem}></canvas>
+            </section>
         </div>
     );
 }

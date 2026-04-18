@@ -83,7 +83,7 @@ nums = [1, 2, 3]
   }
 
   return (
-    <div className="flex-1 p-3 flex flex-col gap-3">
+    <div className="flex-1 bg-[#2a2a2a] p-3 rounded-2xl flex flex-col gap-3">
         {/* Editor */}
         <textarea
         value={code}
