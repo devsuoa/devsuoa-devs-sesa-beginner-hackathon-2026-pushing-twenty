@@ -32,13 +32,15 @@ export default function Home() {
             <button className="ml-5 mt-5 absolute border-4 rounded-3xl p-5" onClick={handleOpen} disabled={isVisible}>
                 Glorp
             </button>
-            <section className="">
+            <section className="relative w-full h-screen">
                 {isVisible && (
-                    <LevelComponent
-                    key={mountKey}
-                    onClose={() => setIsVisible(false)}
-                    lvl={lvlNum}
-                    />
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[90vh] z-50">
+                        <LevelComponent
+                        key={mountKey}
+                        onClose={() => setIsVisible(false)}
+                        lvl={lvlNum}
+                        />
+                    </div>
                 )}
                 <canvas ref={canvasRef} className={styles.solarsystem}></canvas>
             </section>
