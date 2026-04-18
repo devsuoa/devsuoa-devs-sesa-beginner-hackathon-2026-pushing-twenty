@@ -1,11 +1,20 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
+import { generatePlanetLanguage } from "../language/generator/generatePlanetLanguage";
+import { parseAlien } from "../language/parse/parseAlien";
+import { renderPython } from "../language/render/renderPython";
+import { validateAlienSource } from "../language/validate/validateAlienSource";
 
-const OutputComponent = () => {
+const OutputComponent = ({ seed }: { seed: number }) => {
   const [code, setCode] = useState("")
   const [output, setOutput] = useState("")
+  const [translatedPython, setTranslatedPython] = useState("");
   const [pyodideReady, setPyodideReady] = useState(false)
   const pyodideRef = useRef<any>(null)
-  const outputExpected = "5"
+  const outputExpected = "9"
+
+  // Use a fixed seed for this level for now
+  const lang = useMemo(() => generatePlanetLanguage(seed), []);
+
   useEffect(() => {
     const loadPyodide = async () => {
       // @ts-ignore
@@ -17,18 +26,48 @@ const OutputComponent = () => {
 
   const runCode = async () => {
     if (!pyodideRef.current) return
-    await pyodideRef.current.runPythonAsync(`
-      import sys, io
-      sys.stdout = io.StringIO()
-    `)
-    try {
-      await pyodideRef.current.runPythonAsync(code)
-      const result = await pyodideRef.current.runPythonAsync(`sys.stdout.getvalue()`)
-      setOutput(result)
-    } catch (err: any) {
-      setOutput(err.message)
+    if (!pyodideRef.current) return;
+
+    const validation = validateAlienSource(code, lang);
+
+    if (!validation.isValid) {
+      setTranslatedPython("");
+      setOutput(
+        validation.issues
+          .map(
+            (issue) =>
+              `Line ${issue.line}, Col ${issue.column}: ${issue.message}`,
+          )
+          .join("\n"),
+      );
+      return;
     }
-  }
+    try {
+      // 1. Alien -> AST
+      const ast = parseAlien(code, lang);
+      console.log(ast);
+      // 2. AST -> Python
+      const pythonCode = renderPython(ast);
+      setTranslatedPython(pythonCode);
+      
+
+      // 3. Reset stdout
+      await pyodideRef.current.runPythonAsync(`
+import sys, io
+sys.stdout = io.StringIO()
+nums = [1, 2, 3]
+      `);
+
+      // 4. Run translated Python
+      await pyodideRef.current.runPythonAsync(pythonCode);
+
+      // 5. Get output
+      const result = await pyodideRef.current.runPythonAsync(`sys.stdout.getvalue()`);
+      setOutput(String(result));
+    } catch (err: any) {
+      setOutput(err?.message ?? String(err));
+    }
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Tab") {
