@@ -1,6 +1,49 @@
-import React from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import Image from 'react'
-const InfoComponent = () => {
+import { renderAlien } from "../language/render/renderAlien";
+import { generatePlanetLanguage } from "../language/generator/generatePlanetLanguage";
+import { parsePythonWithTreeSitter } from "../language/parse/parsePythonWithTreeSitter";
+import type { ProgramNode } from "../language/types";
+
+const InfoComponent = ({ seed }: { seed: number }) => {
+  const [exampleAst, setExampleAst] = useState<ProgramNode | null>(null);
+  const [exampleAlien, setExampleAlien] = useState("");
+  const [exampleError, setExampleError] = useState("");
+  const sourcePython = `
+    nums = [1,2,3]
+    sum = 0
+    for i in nums:
+      sum += i
+    print(sum)
+    `.trim();
+
+  // Use a fixed seed for this level for now
+    const lang = useMemo(() => generatePlanetLanguage(seed), []);
+  
+  useEffect(() => {
+    let cancelled = false;
+
+    const parseExample = async () => {
+      try {
+        setExampleError("");
+
+        const ast = await parsePythonWithTreeSitter(sourcePython);
+        if (cancelled) return;
+
+        setExampleAst(ast);
+        setExampleAlien(renderAlien(ast, lang));
+      } catch (err) {
+        if (cancelled) return;
+        setExampleError(err instanceof Error ? err.message : String(err));
+      }
+    };
+
+    parseExample();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [sourcePython, lang]);
   return (
     <div className="flex-1 bg-[#2a2a2a] rounded-2xl p-3 flex flex-col gap-3">
         
@@ -17,11 +60,7 @@ const InfoComponent = () => {
             *** PYTHON CODE ***
             </div>
             <div className="bg-[#4a8be0] m-2 rounded-xl p-3">
-            <pre className="text-white text-xs leading-relaxed m-0">{`nums = [1,2,3]
-sum = 0
-for i in nums:
-sum += i
-print(sum)`}</pre>
+            <pre className="text-white text-xs leading-relaxed m-0">{sourcePython}</pre>
             </div>
         </div>
 
@@ -31,11 +70,7 @@ print(sum)`}</pre>
             *** ALIEN CODE ***
             </div>
             <div className="bg-[#3a9447] transition m-2 rounded-xl p-3">
-            <pre className="text-white text-xs leading-relaxed m-0">{`nums eats [1,2,3]
-sum eats 0
-i eats nums slowly:
-sum eats more i
-print eats sum`}</pre>
+            <pre className="text-white text-xs leading-relaxed m-0">{exampleError ? `Error: ${exampleError}` : exampleAlien || "Loading..."}</pre>
             </div>
         </div>
         </div>

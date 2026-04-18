@@ -1,8 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import OutputComponent from './OutputComponent'
 import InfoComponent from './InfoComponent'
 
-export default function LevelComponent({ onClose }: { onClose: () => void }) {
+interface LevelProps {
+  onClose: () => void;
+  lvl: number;
+}
+
+export default function LevelComponent({ onClose, lvl }: LevelProps) {
   const [isClosing, setIsClosing] = useState(false);
 
   const handleClose = () => setIsClosing(true);
@@ -10,7 +15,7 @@ export default function LevelComponent({ onClose }: { onClose: () => void }) {
   const handleAnimationEnd = () => {
     if (isClosing) onClose();
   };
-
+  const seed = lvl*71 - 10;
   return (
     <>
       <style>{`
@@ -43,13 +48,11 @@ export default function LevelComponent({ onClose }: { onClose: () => void }) {
           ✕
         </button>
 
-        <div className="flex gap-4 p-4 w-6/7 mx-auto">
-          <div className="flex-1 bg-[#2a2a2a] rounded-2xl p-3 flex flex-col gap-3">
-            <InfoComponent />
-          </div>
-          <div className="flex-1 bg-[#2a2a2a] rounded-2xl p-3 flex flex-col gap-3">
-            <OutputComponent />
-          </div>
+        <div className="flex-1 bg-[#2a2a2a] rounded-2xl p-3 flex flex-col gap-3">
+          <InfoComponent seed={seed}/>
+        </div>
+        <div className="flex-1 bg-[#2a2a2a] rounded-2xl p-3 flex flex-col gap-3">
+          <OutputComponent seed={seed} />
         </div>
       </div>
     </>

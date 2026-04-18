@@ -4,7 +4,7 @@ import LevelComponent from "../../components/LevelComponent";
 import { main } from "./solarsystem.js";
 
 function Home() {
-    
+    const lvlNum = 4;
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
     useEffect(() => {
@@ -31,6 +31,7 @@ function Home() {
                 <LevelComponent
                 key={mountKey}
                 onClose={() => setIsVisible(false)}
+                lvl={lvlNum}
                 />
             )}
             <header>
