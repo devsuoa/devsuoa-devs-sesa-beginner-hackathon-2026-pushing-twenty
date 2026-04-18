@@ -3,7 +3,7 @@ import * as THREE from "three";
 const ZOOM_DIST    = 5;       // how close the camera gets (in planet radii + offset)
 const TWEEN_SPEED  = 0.07;    // lerp factor for camera movement
 
-export function main(canvas) {
+export function main(canvas, onPlanetFocus) {
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -122,11 +122,22 @@ export function main(canvas) {
     const raycaster = new THREE.Raycaster();
     const pointer   = new THREE.Vector2();
 
-    let paused         = false;   // are planets frozen?
-    let focusedPlanet  = null;    // the planet object we zoomed into
-    let cameraTarget   = null;    // THREE.Vector3 we're tweening toward
-    let lookAtTarget   = null;    // THREE.Vector3 we're looking at
+    let paused         = false;
+    let focusedPlanet  = null;
+    let cameraTarget   = null;
+    let lookAtTarget   = null;
     let tweening       = false;
+    let popupFired     = false;
+
+    // Zoom out — resets focus and starts the camera tween back to the initial position.
+    // Called both by canvas clicks on empty space and externally (e.g. the ✕ button).
+    function zoomOut() {
+        focusedPlanet = null;
+        paused        = false;
+        tweening      = true;
+        cameraTarget  = initPos.clone();
+        lookAtTarget  = new THREE.Vector3(0, 0, 0);
+    }
 
     canvas.addEventListener('click', e => {
         const rect = canvas.getBoundingClientRect();
@@ -138,20 +149,16 @@ export function main(canvas) {
         const hits   = raycaster.intersectObjects(meshes);
 
         if (hits.length > 0) {
-            // Clicked a planet — focus it
             const hit = hits[0];
             focusedPlanet = planets.find(p => p.mesh === hit.object);
-            paused  = true;
-            tweening = true;
+            paused     = true;
+            tweening   = true;
+            popupFired = false;
         } else {
-            // Clicked empty space — release
-            focusedPlanet = null;
-            paused   = false;
-            tweening  = true;
-            cameraTarget = initPos.clone();
-            lookAtTarget = new THREE.Vector3(0, 0, 0);
+            zoomOut();
         }
     });
+
     // ─────────────────────────────────────────────────────────────────────
 
     function resizeRendererToDisplaySize(renderer) {
@@ -166,7 +173,6 @@ export function main(canvas) {
 
     function render() {
 
-        // Advance planet orbits (only when not paused)
         planets.forEach(p => {
             if (!paused) {
                 p.angle += p.speed * 0.008;
@@ -181,47 +187,30 @@ export function main(canvas) {
 
         sun.rotation.y += 0.003;
 
-
-
-
-
-        
-
-        // Update the camera target each frame while focused
-        // (so the camera tracks the planet even mid-tween if it still moves slightly)
         if (focusedPlanet) {
             const pPos = focusedPlanet.mesh.position;
-            // Position the camera slightly behind & above the planet relative to the origin
             const dir = pPos.clone().normalize();
             cameraTarget = pPos.clone().add(dir.multiplyScalar(focusedPlanet.radius + ZOOM_DIST));
             cameraTarget.y += focusedPlanet.radius * 0.8;
             lookAtTarget = pPos.clone();
         }
 
-        // Tween camera
         if (tweening && cameraTarget && lookAtTarget) {
             camera.position.lerp(cameraTarget, TWEEN_SPEED);
             currentLookAt.lerp(lookAtTarget, TWEEN_SPEED);
             camera.lookAt(currentLookAt);
 
-            // Stop tweening once close enough
             if (camera.position.distanceTo(cameraTarget) < 0.05) {
                 tweening = false;
 
-
-
-
-                
-                // POP UP HERE
-
-
-
-
-
-                
+                if (focusedPlanet && !popupFired) {
+                    popupFired = true;
+                    if (typeof onPlanetFocus === 'function') {
+                        onPlanetFocus();
+                    }
+                }
             }
         } else if (!paused) {
-            // Normal parallax behaviour
             currentOffset.x += (targetOffset.x - currentOffset.x) * 0.13;
             currentOffset.y += (targetOffset.y - currentOffset.y) * 0.13;
 
@@ -234,11 +223,6 @@ export function main(canvas) {
             camera.lookAt(currentLookAt);
         }
 
-
-
-
-
-        
         if (resizeRendererToDisplaySize(renderer)) {
             camera.aspect = canvas.clientWidth / canvas.clientHeight;
             camera.updateProjectionMatrix();
@@ -249,4 +233,6 @@ export function main(canvas) {
     }
 
     requestAnimationFrame(render);
+
+    return { zoomOut };
 }

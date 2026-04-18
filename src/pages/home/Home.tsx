@@ -1,18 +1,12 @@
 import styles from "./Home.module.css";
-import {useState, useEffect, useRef} from "react";
+import { useState, useEffect, useRef } from "react";
 import LevelComponent from "../../components/LevelComponent";
 import { main } from "./solarsystem.js";
 
 export default function Home() {
     const lvlNum = 4;
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-    useEffect(() => {
-        
-        if (!canvasRef.current) return;
-        
-        main(canvasRef.current);
-        }, []);
+    const zoomOutRef = useRef<(() => void) | null>(null);
 
     const [isVisible, setIsVisible] = useState(false);
     const [mountKey, setMountKey] = useState(0);
@@ -21,6 +15,17 @@ export default function Home() {
         setMountKey(k => k + 1);
         setIsVisible(true);
     };
+
+    const handleClose = () => {
+        setIsVisible(false);
+        zoomOutRef.current?.();
+    };
+
+    useEffect(() => {
+        if (!canvasRef.current) return;
+        const { zoomOut } = main(canvasRef.current, handleOpen);
+        zoomOutRef.current = zoomOut;
+    }, []);
 
     return (
         <div>
@@ -35,9 +40,9 @@ export default function Home() {
             <section className="">
                 {isVisible && (
                     <LevelComponent
-                    key={mountKey}
-                    onClose={() => setIsVisible(false)}
-                    lvl={lvlNum}
+                        key={mountKey}
+                        onClose={handleClose}
+                        lvl={lvlNum}
                     />
                 )}
                 <canvas ref={canvasRef} className={styles.solarsystem}></canvas>
