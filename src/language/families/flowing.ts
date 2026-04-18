@@ -20,10 +20,26 @@ export const flowingFamily: LanguageFamily = {
     alternatePrefixes: ["ve", "el"],
     iteratorSuffixes: ["li", "ri"],
     negationPrefixes: ["ne", "no"],
-  },
 
+    arithmeticPrefixes: ["la", "so"],
+    arithmeticSuffixes: ["ra", "ni"],
+
+    comparisonPrefixes: ["ve", "se"],
+    comparisonSuffixes: ["la", "ri"],
+
+    logicPrefixes: ["el", "na"],
+    logicSuffixes: ["ra", "li"],
+
+    builtinPrefixes: ["so", "ve"],
+    builtinSuffixes: ["na", "ra"],
+
+    assignmentRoots: ["becomes", "flows", "turns", "luma", "vela"],
+    assignmentPrefixes: ["", "a", "e"],
+    assignmentSuffixes: ["", "ra", "na"],
+  },
+  
   syntaxBias: {
-    assignmentStyles: ["equals", "set_prefix"],
+    assignmentStyles: ["word_infix", "word_prefix", "put_in"],
     functionStyles: ["keyword_name_params_block", "make_name_with_params_block"],
     blockStyles: ["indent"],
     conditionalStyles: ["when_expr_then"],

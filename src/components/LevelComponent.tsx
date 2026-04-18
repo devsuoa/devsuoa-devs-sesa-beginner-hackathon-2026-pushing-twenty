@@ -1,10 +1,32 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { generatePlanetLanguage } from "../language/generator/generatePlanetLanguage";
+import { parseAlien } from "../language/parse/parseAlien";
+import { renderPython } from "../language/render/renderPython";
+import { renderAlien } from "../language/render/renderAlien";
+import { parsePythonWithTreeSitter } from "../language/parse/parsePythonWithTreeSitter";
+import type { ProgramNode } from "../language/types";
+import { validateAlienSource } from "../language/validate/validateAlienSource";
 
 export default function LevelComponent() {
   const [code, setCode] = useState("")
   const [output, setOutput] = useState("")
+  const [translatedPython, setTranslatedPython] = useState("");
+  const [exampleAst, setExampleAst] = useState<ProgramNode | null>(null);
+  const [exampleAlien, setExampleAlien] = useState("");
+  const [exampleError, setExampleError] = useState("");
   const [pyodideReady, setPyodideReady] = useState(false)
   const pyodideRef = useRef<any>(null)
+  const sourcePython = `
+nums = [1,2,3]
+sum = 0
+for i in nums:
+  sum += i
+print(sum)
+`.trim();
+  
+
+  // Use a fixed seed for this level for now
+  const lang = useMemo(() => generatePlanetLanguage(2), []);
 
   useEffect(() => {
     const loadPyodide = async () => {
@@ -15,20 +37,74 @@ export default function LevelComponent() {
     loadPyodide()
   }, [])
 
+  useEffect(() => {
+    let cancelled = false;
+
+    const parseExample = async () => {
+      try {
+        setExampleError("");
+
+        const ast = await parsePythonWithTreeSitter(sourcePython);
+        if (cancelled) return;
+
+        setExampleAst(ast);
+        setExampleAlien(renderAlien(ast, lang));
+      } catch (err) {
+        if (cancelled) return;
+        setExampleError(err instanceof Error ? err.message : String(err));
+      }
+    };
+
+    parseExample();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [sourcePython, lang]);
+
   const runCode = async () => {
     if (!pyodideRef.current) return
-    await pyodideRef.current.runPythonAsync(`
-      import sys, io
-      sys.stdout = io.StringIO()
-    `)
-    try {
-      await pyodideRef.current.runPythonAsync(code)
-      const result = await pyodideRef.current.runPythonAsync(`sys.stdout.getvalue()`)
-      setOutput(result)
-    } catch (err: any) {
-      setOutput(err.message)
+    if (!pyodideRef.current) return;
+
+    const validation = validateAlienSource(code, lang);
+
+    if (!validation.isValid) {
+      setTranslatedPython("");
+      setOutput(
+        validation.issues
+          .map(
+            (issue) =>
+              `Line ${issue.line}, Col ${issue.column}: ${issue.message}`,
+          )
+          .join("\n"),
+      );
+      return;
     }
-  }
+    try {
+      // 1. Alien -> AST
+      const ast = parseAlien(code, lang);
+      console.log(ast);
+      // 2. AST -> Python
+      const pythonCode = renderPython(ast);
+      setTranslatedPython(pythonCode);
+      
+
+      // 3. Reset stdout
+      await pyodideRef.current.runPythonAsync(`
+import sys, io
+sys.stdout = io.StringIO()
+      `);
+
+      // 4. Run translated Python
+      await pyodideRef.current.runPythonAsync(pythonCode);
+
+      // 5. Get output
+      const result = await pyodideRef.current.runPythonAsync(`sys.stdout.getvalue()`);
+      setOutput(String(result));
+    } catch (err: any) {
+      setOutput(err?.message ?? String(err));
+    }
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Tab") {
@@ -63,11 +139,7 @@ export default function LevelComponent() {
               *** PYTHON CODE ***
             </div>
             <div className="bg-[#4a8be0] m-2 rounded-xl p-3">
-              <pre className="text-white text-xs leading-relaxed m-0">{`nums = [1,2,3]
-sum = 0
-for i in nums:
-  sum += i
-print(sum)`}</pre>
+              <pre className="text-white text-xs leading-relaxed m-0">{sourcePython}</pre>
             </div>
           </div>
 
@@ -77,11 +149,7 @@ print(sum)`}</pre>
               *** ALIEN CODE ***
             </div>
             <div className="bg-[#3a9447] m-2 rounded-xl p-3">
-              <pre className="text-white text-xs leading-relaxed m-0">{`nums eats [1,2,3]
-sum eats 0
-i eats nums slowly:
-  sum eats more i
-print eats sum`}</pre>
+              <pre className="text-white text-xs leading-relaxed m-0">{exampleError ? `Error: ${exampleError}` : exampleAlien || "Loading..."}</pre>
             </div>
           </div>
         </div>

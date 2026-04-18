@@ -12,11 +12,14 @@ import type {
   FunctionDefNode,
   IdentifierNode,
   IfNode,
+  IndexExprNode,
+  ListLiteralNode,
   NoneLiteralNode,
   NumberLiteralNode,
   ProgramNode,
   ReturnNode,
   StatementNode,
+  StringLiteralNode,
   UnaryExprNode,
   UnaryOperator,
   WhileNode,
@@ -230,6 +233,10 @@ function parseBinary(node: TSNode): BinaryExprNode {
 export function parseExpr(node: TSNode): ExprNode {
   const unwrapped = unwrapParenthesized(node);
 
+  if (unwrapped.type === "assignment") {
+    fail(unwrapped, "Assignment cannot appear as expression");
+  }
+
   switch (unwrapped.type) {
     case "identifier":
       return parseIdentifier(unwrapped);
@@ -243,6 +250,15 @@ export function parseExpr(node: TSNode): ExprNode {
 
     case "none":
       return parseNone(unwrapped);
+
+    case "string":
+      return parseString(unwrapped);
+
+    case "list":
+      return parseList(unwrapped);
+
+    case "subscript":
+      return parseSubscript(unwrapped);
 
     case "call":
       return parseCall(unwrapped);
@@ -262,11 +278,68 @@ export function parseExpr(node: TSNode): ExprNode {
 
 function parseExpressionStatement(node: TSNode): ExprStatementNode {
   const exprNode =
-    node.childForFieldName("expression") ?? getSingleNamedChild(node, "Expected expression statement child");
+    node.childForFieldName("expression") ??
+    getSingleNamedChild(node, "Expected expression statement child");
+
+  if (exprNode.type === "assignment") {
+    fail(exprNode, "Assignment should be handled as a statement, not an expression statement");
+  }
 
   return {
     type: "ExprStatement",
     expression: parseExpr(exprNode),
+  };
+}
+
+function parseAugmentedAssignment(node: TSNode): AssignNode {
+  if (node.type !== "augmented_assignment") {
+    fail(node, "Expected augmented assignment");
+  }
+
+  const leftNode = getRequiredField(node, "left");
+  const rightNode = getRequiredField(node, "right");
+
+  if (leftNode.type !== "identifier") {
+    fail(leftNode, "Only simple variable augmented assignment is supported");
+  }
+
+  const leftText = leftNode.text;
+  const rightText = rightNode.text;
+
+  const start = node.text.indexOf(leftText) + leftText.length;
+  const end = node.text.lastIndexOf(rightText);
+
+  if (start < 0 || end < start) {
+    fail(node, "Could not determine augmented assignment operator");
+  }
+
+  const operatorText = node.text.slice(start, end).trim();
+
+  const operatorMap: Record<string, BinaryOperator> = {
+    "+=": "+",
+    "-=": "-",
+    "*=": "*",
+    "/=": "/",
+    "%=": "%",
+  };
+
+  const binaryOperator = operatorMap[operatorText];
+  if (!binaryOperator) {
+    fail(node, `Unsupported augmented assignment operator "${operatorText}"`);
+  }
+
+  return {
+    type: "Assign",
+    target: leftText,
+    value: {
+      type: "BinaryExpr",
+      operator: binaryOperator,
+      left: {
+        type: "Identifier",
+        name: leftText,
+      },
+      right: parseExpr(rightNode),
+    },
   };
 }
 
@@ -285,7 +358,7 @@ function parseAssignment(node: TSNode): AssignNode {
   return {
     type: "Assign",
     target: leftNode.text,
-    value: parseExpr(rightNode),
+    value: parseExpr(rightNode), // ✅ list goes here
   };
 }
 
@@ -444,10 +517,60 @@ function parseFor(node: TSNode): ForNode {
   };
 }
 
+function parseString(node: TSNode): StringLiteralNode {
+  if (node.type !== "string") {
+    fail(node, "Expected string");
+  }
+
+  return {
+    type: "StringLiteral",
+    value: JSON.parse(node.text),
+  };
+}
+
+function parseList(node: TSNode): ListLiteralNode {
+  if (node.type !== "list") {
+    fail(node, "Expected list");
+  }
+
+  return {
+    type: "ListLiteral",
+    elements: getNamedChildren(node).map(parseExpr),
+  };
+}
+
+function parseSubscript(node: TSNode): IndexExprNode {
+  if (node.type !== "subscript") {
+    fail(node, "Expected subscript");
+  }
+
+  const targetNode =
+    node.childForFieldName("value") ??
+    getNamedChildren(node)[0];
+
+  const indexNode =
+    node.childForFieldName("subscript") ??
+    getNamedChildren(node)[1];
+
+  if (!targetNode || !indexNode) {
+    fail(node, "Invalid subscript");
+  }
+
+  return {
+    type: "IndexExpr",
+    target: parseExpr(targetNode),
+    index: parseExpr(indexNode),
+  };
+}
+
 export function parseStatement(node: TSNode): StatementNode {
+
   switch (node.type) {
     case "function_definition":
       return parseFunctionDef(node);
+
+    case "augmented_assignment":
+      return parseAugmentedAssignment(node);
 
     case "assignment":
       return parseAssignment(node);
@@ -470,8 +593,24 @@ export function parseStatement(node: TSNode): StatementNode {
     case "continue_statement":
       return parseContinue(node);
 
-    case "expression_statement":
-      return parseExpressionStatement(node);
+    case "expression_statement": {
+      const child =
+        node.childForFieldName("expression") ??
+        getSingleNamedChild(node, "Expected expression statement child");
+
+      if (child.type === "assignment") {
+        return parseAssignment(child);
+      }
+
+      if (child.type === "augmented_assignment") {
+        return parseAugmentedAssignment(child);
+      }
+
+      return {
+        type: "ExprStatement",
+        expression: parseExpr(child),
+      };
+    }
 
     default:
       fail(node, "Unsupported statement");

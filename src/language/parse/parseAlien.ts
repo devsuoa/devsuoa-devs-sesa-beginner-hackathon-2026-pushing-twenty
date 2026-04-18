@@ -59,6 +59,24 @@ class AlienParser {
     }
   }
 
+    private invertRecord(map: Record<string, string>): Record<string, string> {
+    const out: Record<string, string> = {};
+    for (const [canonical, alien] of Object.entries(map)) {
+      out[alien] = canonical;
+    }
+    return out;
+  }
+
+  private alienToCanonicalOperator(token: string): string {
+    const reversed = this.invertRecord(this.lang.operators);
+    return reversed[token] ?? token;
+  }
+
+  private alienToCanonicalBuiltin(token: string): string {
+    const reversed = this.invertRecord(this.lang.builtins);
+    return reversed[token] ?? token;
+  }
+
   private parseBlock(indentLevel: number): StatementNode[] {
     const statements: StatementNode[] = [];
 
@@ -390,6 +408,7 @@ class AlienParser {
   private parseAssign(): AssignNode {
     const token = this.consume();
     const line = token.trimmed;
+    const word = this.lang.symbols.assignmentWord ?? "set";
 
     if (this.lang.syntax.assignmentStyle === "put_in") {
       const prefix = "put ";
@@ -441,9 +460,74 @@ class AlienParser {
       };
     }
 
-    const tokenText = this.lang.syntax.assignmentStyle === "arrow"
-      ? ` ${this.lang.symbols.assignmentToken ?? "<-"} `
-      : " = ";
+    if (this.lang.syntax.assignmentStyle === "word_prefix") {
+      const prefix = `${word} `;
+      if (!line.startsWith(prefix)) {
+        throw new Error(`Line ${token.lineNumber}: invalid prefix assignment`);
+      }
+
+      const rest = line.slice(prefix.length).trim();
+      const firstSpace = rest.indexOf(" ");
+
+      if (firstSpace === -1) {
+        throw new Error(`Line ${token.lineNumber}: invalid prefix assignment`);
+      }
+
+      const target = rest.slice(0, firstSpace).trim();
+      const valueText = rest.slice(firstSpace + 1).trim();
+
+      return {
+        type: "Assign",
+        target,
+        value: this.parseExpr(valueText),
+      };
+    }
+
+    if (this.lang.syntax.assignmentStyle === "word_suffix") {
+      const suffix = ` ${word}`;
+      if (!line.endsWith(suffix)) {
+        throw new Error(`Line ${token.lineNumber}: invalid suffix assignment`);
+      }
+
+      const middle = line.slice(0, line.length - suffix.length).trim();
+      const firstSpace = middle.indexOf(" ");
+
+      if (firstSpace === -1) {
+        throw new Error(`Line ${token.lineNumber}: invalid suffix assignment`);
+      }
+
+      const target = middle.slice(0, firstSpace).trim();
+      const valueText = middle.slice(firstSpace + 1).trim();
+
+      return {
+        type: "Assign",
+        target,
+        value: this.parseExpr(valueText),
+      };
+    }
+
+    if (this.lang.syntax.assignmentStyle === "word_infix") {
+      const marker = ` ${word} `;
+      const markerIndex = line.indexOf(marker);
+
+      if (markerIndex === -1) {
+        throw new Error(`Line ${token.lineNumber}: invalid infix assignment`);
+      }
+
+      const target = line.slice(0, markerIndex).trim();
+      const valueText = line.slice(markerIndex + marker.length).trim();
+
+      return {
+        type: "Assign",
+        target,
+        value: this.parseExpr(valueText),
+      };
+    }
+
+    const tokenText =
+      this.lang.syntax.assignmentStyle === "arrow"
+        ? ` ${this.lang.symbols.assignmentToken ?? "<-"} `
+        : " = ";
 
     const markerIndex = line.indexOf(tokenText);
     if (markerIndex === -1) {
@@ -636,13 +720,32 @@ class AlienParser {
     if (this.lang.syntax.assignmentStyle === "put_in") {
       return line.startsWith("put ");
     }
+
     if (this.lang.syntax.assignmentStyle === "set_prefix") {
       return line.startsWith("set ");
     }
+
     if (this.lang.syntax.assignmentStyle === "arrow") {
       return line.includes(` ${this.lang.symbols.assignmentToken ?? "<-"} `);
     }
-    return line.includes(" = ");
+
+    if (this.lang.syntax.assignmentStyle === "equals") {
+      return line.includes(" = ");
+    }
+
+    if (this.lang.syntax.assignmentStyle === "word_infix") {
+      return line.includes(` ${this.lang.symbols.assignmentWord} `);
+    }
+
+    if (this.lang.syntax.assignmentStyle === "word_prefix") {
+      return line.startsWith(`${this.lang.symbols.assignmentWord} `);
+    }
+
+    if (this.lang.syntax.assignmentStyle === "word_suffix") {
+      return line.endsWith(` ${this.lang.symbols.assignmentWord}`);
+    }
+
+    return false;
   }
 
   private parseExpr(text: string): ExprNode {
@@ -695,7 +798,8 @@ class AlienParser {
       return null;
     }
 
-    const callee = text.slice(0, openIndex).trim();
+    const rawCallee = text.slice(0, openIndex).trim();
+    const callee = this.alienToCanonicalBuiltin(rawCallee);
     const argsText = text.slice(openIndex + open.length, closeIndex).trim();
 
     const args = argsText
@@ -710,7 +814,7 @@ class AlienParser {
   }
 
   private tryParseUnary(text: string): ExprNode | null {
-    const notPrefix = `${this.lang.keywords.not} `;
+    const notPrefix = `${this.lang.operators.not} `;
     if (text.startsWith(notPrefix)) {
       return {
         type: "UnaryExpr",
@@ -719,32 +823,33 @@ class AlienParser {
       };
     }
 
-    if (text.startsWith("-") && text.length > 1) {
+    const minusToken = this.lang.operators["-"];
+    if (text.startsWith(minusToken) && text.length > minusToken.length) {
       return {
         type: "UnaryExpr",
         operator: "-" as UnaryOperator,
-        operand: this.parseExpr(text.slice(1)),
+        operand: this.parseExpr(text.slice(minusToken.length)),
       };
     }
 
     return null;
   }
 
-  private tryParseBinary(text: string): ExprNode | null {
+    private tryParseBinary(text: string): ExprNode | null {
     const operatorCandidates: Array<[string, BinaryOperator]> = [
-      [` ${this.lang.keywords.and} `, "and"],
-      [` ${this.lang.keywords.or} `, "or"],
-      [" == ", "=="],
-      [" != ", "!="],
-      [" <= ", "<="],
-      [" >= ", ">="],
-      [" < ", "<"],
-      [" > ", ">"],
-      [" + ", "+"],
-      [" - ", "-"],
-      [" * ", "*"],
-      [" / ", "/"],
-      [" % ", "%"],
+      [` ${this.lang.operators.and} `, "and"],
+      [` ${this.lang.operators.or} `, "or"],
+      [` ${this.lang.operators["=="]} `, "=="],
+      [` ${this.lang.operators["!="]} `, "!="],
+      [` ${this.lang.operators["<="]} `, "<="],
+      [` ${this.lang.operators[">="]} `, ">="],
+      [` ${this.lang.operators["<"]} `, "<"],
+      [` ${this.lang.operators[">"]} `, ">"],
+      [` ${this.lang.operators["+"]} `, "+"],
+      [` ${this.lang.operators["-"]} `, "-"],
+      [` ${this.lang.operators["*"]} `, "*"],
+      [` ${this.lang.operators["/"]} `, "/"],
+      [` ${this.lang.operators["%"]} `, "%"],
     ];
 
     for (const [tokenText, canonicalOp] of operatorCandidates) {

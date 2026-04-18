@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { HashRouter } from "react-router";
 import App from "./App";
 import "./index.css";
-import "./dev/debugTreeSitterAst"
+//import "./dev/debugTreeSitterAst"
 
 // Entry point of the application.
 createRoot(document.getElementById("root")!).render(

@@ -20,19 +20,32 @@ export const sharpFamily: LanguageFamily = {
     literalSuffixes: ["ul", "um"],
     alternatePrefixes: ["va", "zu"],
     iteratorSuffixes: ["in", "ir"],
-    negationPrefixes: ["ch", "n"],
+    negationPrefixes: ["sh", "n"],
+
+    arithmeticPrefixes: ["ka", "ta"],
+    arithmeticSuffixes: ["ix", "ak"],
+
+    comparisonPrefixes: ["ve", "zo"],
+    comparisonSuffixes: ["et", "or"],
+
+    logicPrefixes: ["shi", "ra"],
+    logicSuffixes: ["en", "ik"],
+
+    builtinPrefixes: ["ul", "tor"],
+    builtinSuffixes: ["a", "um"],
+
+    assignmentRoots: ["bind", "lock", "vak", "tash"],
+    assignmentPrefixes: ["", "z", "k"],
+    assignmentSuffixes: ["", "ar", "ik"],
   },
 
   syntaxBias: {
-    assignmentStyles: ["equals", "arrow"],
-    functionStyles: [
-      "keyword_name_params_block",
-      "keyword_name_square_params_block",
-    ],
-    blockStyles: ["indent", "arrow_indent"],
-    conditionalStyles: ["keyword_expr_block", "keyword_paren_expr_block"],
-    elseStyles: ["keyword_block", "keyword_spaced_block"],
-    forStyles: ["for_var_in_iter", "for_paren_var_in_iter"],
+    assignmentStyles: ["word_infix", "word_suffix"],
+    functionStyles: ["keyword_name_params_block"],
+    blockStyles: ["indent"],
+    conditionalStyles: ["keyword_expr_block"],
+    elseStyles: ["keyword_block"],
+    forStyles: ["for_var_in_iter"],
   },
 
   visualStyle: {

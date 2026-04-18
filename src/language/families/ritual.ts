@@ -20,10 +20,24 @@ export const ritualFamily: LanguageFamily = {
     alternatePrefixes: ["otha", "alt"],
     iteratorSuffixes: ["en"],
     negationPrefixes: ["un", "non"],
-  },
+    arithmeticPrefixes: ["tha", "vel"],
+    arithmeticSuffixes: ["um", "ar"],
 
+    comparisonPrefixes: ["ora", "eth"],
+    comparisonSuffixes: ["um", "en"],
+
+    logicPrefixes: ["vel", "th"],
+    logicSuffixes: ["ar", "um"],
+
+    builtinPrefixes: ["ora", "vel"],
+    builtinSuffixes: ["en", "um"],
+
+    assignmentRoots: ["invoke", "bind", "inscribe", "summon", "kora"],
+    assignmentPrefixes: ["", "vel", "tha"],
+    assignmentSuffixes: ["", "um", "en"],
+    },
   syntaxBias: {
-    assignmentStyles: ["put_in"],
+    assignmentStyles: ["put_in", "word_prefix", "word_infix"],
     functionStyles: ["make_name_with_params_block"],
     blockStyles: ["then_end"],
     conditionalStyles: ["when_expr_then"],

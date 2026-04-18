@@ -12,11 +12,14 @@ import type {
   GeneratedPlanetLanguage,
   IdentifierNode,
   IfNode,
+  IndexExprNode,
+  ListLiteralNode,
   NoneLiteralNode,
   NumberLiteralNode,
   ProgramNode,
   ReturnNode,
   StatementNode,
+  StringLiteralNode,
   UnaryExprNode,
   WhileNode,
 } from "../types";
@@ -29,6 +32,20 @@ function indentLine(level: number, text: string): string {
 
 function kw(lang: GeneratedPlanetLanguage, key: keyof GeneratedPlanetLanguage["keywords"]): string {
   return lang.keywords[key];
+}
+
+function opToken(
+  lang: GeneratedPlanetLanguage,
+  operator: string,
+): string {
+  return lang.operators[operator as keyof typeof lang.operators] ?? operator;
+}
+
+function builtinToken(
+  lang: GeneratedPlanetLanguage,
+  name: string,
+): string {
+  return lang.builtins[name as keyof typeof lang.builtins] ?? name;
 }
 
 function blockOpen(lang: GeneratedPlanetLanguage): string {
@@ -75,24 +92,19 @@ function renderNoneLiteral(lang: GeneratedPlanetLanguage): string {
 
 function renderCallExpr(node: CallExprNode, lang: GeneratedPlanetLanguage): string {
   const args = node.args.map((arg) => renderExpr(arg, lang)).join(", ");
-  return `${node.callee}${argOpen(lang)}${args}${argClose(lang)}`;
+  const callee = builtinToken(lang, node.callee);
+  return `${callee}${argOpen(lang)}${args}${argClose(lang)}`;
 }
 
 function renderUnaryExpr(node: UnaryExprNode, lang: GeneratedPlanetLanguage): string {
   if (node.operator === "not") {
-    return `${kw(lang, "not")} ${renderExpr(node.operand, lang)}`;
+    return `${opToken(lang, "not")} ${renderExpr(node.operand, lang)}`;
   }
-  return `${node.operator}${renderExpr(node.operand, lang)}`;
+  return `${opToken(lang, node.operator)}${renderExpr(node.operand, lang)}`;
 }
 
 function renderBinaryExpr(node: BinaryExprNode, lang: GeneratedPlanetLanguage): string {
-  const op =
-    node.operator === "and"
-      ? kw(lang, "and")
-      : node.operator === "or"
-      ? kw(lang, "or")
-      : node.operator;
-
+  const op = opToken(lang, node.operator);
   return `${renderExpr(node.left, lang)} ${op} ${renderExpr(node.right, lang)}`;
 }
 
@@ -106,6 +118,12 @@ export function renderExpr(node: ExprNode, lang: GeneratedPlanetLanguage): strin
       return renderBooleanLiteral(node, lang);
     case "NoneLiteral":
       return renderNoneLiteral(lang);
+    case "StringLiteral":
+      return renderStringLiteral(node);
+    case "ListLiteral":
+      return renderListLiteral(node, lang);
+    case "IndexExpr":
+      return renderIndexExpr(node, lang);
     case "BinaryExpr":
       return renderBinaryExpr(node, lang);
     case "UnaryExpr":
@@ -124,6 +142,7 @@ function renderAssignmentText(
   lang: GeneratedPlanetLanguage,
 ): string {
   const rhs = renderExpr(node.value, lang);
+  const word = assignmentWord(lang);
 
   switch (lang.syntax.assignmentStyle) {
     case "equals":
@@ -134,9 +153,19 @@ function renderAssignmentText(
       return `set ${node.target} = ${rhs}`;
     case "put_in":
       return `put ${rhs} in ${node.target}`;
+    case "word_infix":
+      return `${node.target} ${word} ${rhs}`;
+    case "word_prefix":
+      return `${word} ${node.target} ${rhs}`;
+    case "word_suffix":
+      return `${node.target} ${rhs} ${word}`;
     default:
       return `${node.target} = ${rhs}`;
   }
+}
+
+function assignmentWord(lang: GeneratedPlanetLanguage): string {
+  return lang.symbols.assignmentWord ?? "set";
 }
 
 function renderAssign(
@@ -342,6 +371,18 @@ function renderFor(node: ForNode, lang: GeneratedPlanetLanguage, indentLevel: nu
   }
 
   return `${header}\n${body}`;
+}
+
+function renderStringLiteral(node: StringLiteralNode): string {
+  return JSON.stringify(node.value);
+}
+
+function renderListLiteral(node: ListLiteralNode, lang: GeneratedPlanetLanguage): string {
+  return `[${node.elements.map((el) => renderExpr(el, lang)).join(", ")}]`;
+}
+
+function renderIndexExpr(node: IndexExprNode, lang: GeneratedPlanetLanguage): string {
+  return `${renderExpr(node.target, lang)}[${renderExpr(node.index, lang)}]`;
 }
 
 export function renderStatement(

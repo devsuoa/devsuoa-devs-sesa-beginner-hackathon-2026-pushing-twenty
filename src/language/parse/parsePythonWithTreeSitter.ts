@@ -11,6 +11,5 @@ export async function parsePythonWithTreeSitter(
   if (!tree) {
     throw new Error("Tree-sitter failed to parse source");
   }
-
   return treeSitterToAst(tree.rootNode as never);
 }

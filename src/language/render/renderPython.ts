@@ -11,11 +11,14 @@ import type {
   FunctionDefNode,
   IdentifierNode,
   IfNode,
+  IndexExprNode,
+  ListLiteralNode,
   NoneLiteralNode,
   NumberLiteralNode,
   ProgramNode,
   ReturnNode,
   StatementNode,
+  StringLiteralNode,
   UnaryExprNode,
   WhileNode,
 } from "../types";
@@ -68,6 +71,12 @@ export function renderExpr(node: ExprNode): string {
       return renderBooleanLiteral(node);
     case "NoneLiteral":
       return renderNoneLiteral(node);
+    case "StringLiteral":
+      return renderStringLiteral(node);
+    case "ListLiteral":
+      return renderListLiteral(node);
+    case "IndexExpr":
+      return renderIndexExpr(node);
     case "BinaryExpr":
       return renderBinaryExpr(node);
     case "UnaryExpr":
@@ -170,6 +179,18 @@ function renderFor(node: ForNode, indentLevel: number): string {
       : indentLine(indentLevel + 1, "pass");
 
   return `${header}\n${body}`;
+}
+
+function renderStringLiteral(node: StringLiteralNode): string {
+  return JSON.stringify(node.value);
+}
+
+function renderListLiteral(node: ListLiteralNode): string {
+  return `[${node.elements.map(renderExpr).join(", ")}]`;
+}
+
+function renderIndexExpr(node: IndexExprNode): string {
+  return `${renderExpr(node.target)}[${renderExpr(node.index)}]`;
 }
 
 export function renderStatement(node: StatementNode, indentLevel = 0): string {

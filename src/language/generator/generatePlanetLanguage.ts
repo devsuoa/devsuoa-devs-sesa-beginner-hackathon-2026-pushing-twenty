@@ -6,6 +6,7 @@ import type {
   GeneratedSymbolConfig,
   GeneratedSyntaxConfig,
   LanguageFamily,
+  ResolvedMorphology,
 } from "../types";
 import { flowingFamily } from "../families/flowing";
 import { mechanicalFamily } from "../families/mechanical";
@@ -15,6 +16,9 @@ import { generateKeywords } from "./generateKeywords";
 import { generateSemanticRoots } from "./generateSemanticRoots";
 import { makeSeededRng } from "./makeSeededRng";
 import { resolveMorphology } from "./resolveMorphology";
+import { generateBuiltins } from "./generateBuiltins";
+import { generateOperators } from "./generateOperators";
+import { finishToken, joinParts } from "./tokenUtils";
 
 const FAMILIES: LanguageFamily[] = [
   sharpFamily,
@@ -47,12 +51,23 @@ function chooseSyntax(family: LanguageFamily, rng: { next(): number }): Generate
   };
 }
 
-function deriveSymbols(syntax: GeneratedSyntaxConfig): GeneratedSymbolConfig {
+function deriveSymbols(
+  family: LanguageFamily,
+  syntax: GeneratedSyntaxConfig,
+  morphology: ResolvedMorphology,
+): GeneratedSymbolConfig {
   const assignmentToken =
     syntax.assignmentStyle === "arrow"
       ? "<-"
       : syntax.assignmentStyle === "equals" || syntax.assignmentStyle === "set_prefix"
       ? "="
+      : undefined;
+
+  const assignmentWord =
+    syntax.assignmentStyle === "word_infix" ||
+    syntax.assignmentStyle === "word_prefix" ||
+    syntax.assignmentStyle === "word_suffix"
+      ? deriveAssignmentWord(family, morphology)
       : undefined;
 
   const blockOpenToken =
@@ -79,6 +94,7 @@ function deriveSymbols(syntax: GeneratedSyntaxConfig): GeneratedSymbolConfig {
 
   return {
     assignmentToken,
+    assignmentWord,
     blockOpenToken,
     blockCloseToken,
     argOpenToken,
@@ -94,6 +110,20 @@ function deriveCosmetics(family: LanguageFamily): GeneratedCosmeticConfig {
   };
 }
 
+function deriveAssignmentWord(
+  family: LanguageFamily,
+  morphology: ResolvedMorphology,
+): string {
+  return finishToken(
+    joinParts(
+      morphology.assignmentPrefix,
+      morphology.assignmentRoot,
+      morphology.assignmentSuffix,
+    ),
+    family,
+  );
+}
+
 export function generatePlanetLanguage(
   seed: number,
   planetId: number | string = seed,
@@ -105,8 +135,10 @@ export function generatePlanetLanguage(
   const morphology = resolveMorphology(family, rng);
   const keywords = generateKeywords(family, roots, morphology);
   const syntax = chooseSyntax(family, rng);
-  const symbols = deriveSymbols(syntax);
+  const symbols = deriveSymbols(family, syntax, morphology);
   const cosmetic = deriveCosmetics(family);
+  const operators = generateOperators(family, roots, morphology);
+  const builtins = generateBuiltins(family, roots, morphology);
 
   return {
     planetId,
@@ -116,6 +148,8 @@ export function generatePlanetLanguage(
     morphology,
     roots,
     keywords,
+    operators,
+    builtins,
     syntax,
     symbols,
     cosmetic,

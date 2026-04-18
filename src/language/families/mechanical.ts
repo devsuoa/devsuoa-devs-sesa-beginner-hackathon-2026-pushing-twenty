@@ -20,10 +20,24 @@ export const mechanicalFamily: LanguageFamily = {
     alternatePrefixes: ["ALT"],
     iteratorSuffixes: ["TH"],
     negationPrefixes: ["NEG"],
-  },
+    arithmeticPrefixes: ["OP"],
+    arithmeticSuffixes: ["X"],
 
+    comparisonPrefixes: ["CMP"],
+    comparisonSuffixes: ["Z"],
+
+    logicPrefixes: ["LOG"],
+    logicSuffixes: ["Q"],
+
+    builtinPrefixes: ["SYS"],
+    builtinSuffixes: ["M"],
+
+    assignmentRoots: ["LOAD", "SET", "STORE", "CFG"],
+    assignmentPrefixes: [""],
+    assignmentSuffixes: [""],
+  },
   syntaxBias: {
-    assignmentStyles: ["arrow"],
+    assignmentStyles: ["arrow", "word_prefix", "word_infix"],
     functionStyles: ["keyword_name_square_params_block"],
     blockStyles: ["indent", "brace"],
     conditionalStyles: ["keyword_paren_expr_block"],

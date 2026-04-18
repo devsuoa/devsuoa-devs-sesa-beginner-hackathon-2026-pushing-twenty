@@ -20,6 +20,33 @@ export type CanonicalKeyword =
 
 export type KeywordMap = Record<CanonicalKeyword, string>;
 
+export type CanonicalOperator =
+  | "+"
+  | "-"
+  | "*"
+  | "/"
+  | "%"
+  | "=="
+  | "!="
+  | "<"
+  | "<="
+  | ">"
+  | ">="
+  | "and"
+  | "or"
+  | "not";
+
+export type OperatorMap = Record<CanonicalOperator, string>;
+
+export type CanonicalBuiltin =
+  | "print"
+  | "len"
+  | "range";
+
+export type BuiltinMap = Record<CanonicalBuiltin, string>;
+
+
+
 // ---------- Language families ----------
 
 export type LanguageFamilyId =
@@ -53,6 +80,22 @@ export interface MorphologyConfig {
   alternatePrefixes: string[];
   iteratorSuffixes: string[];
   negationPrefixes: string[];
+
+  arithmeticPrefixes: string[];
+  arithmeticSuffixes: string[];
+
+  comparisonPrefixes: string[];
+  comparisonSuffixes: string[];
+
+  logicPrefixes: string[];
+  logicSuffixes: string[];
+
+  builtinPrefixes: string[];
+  builtinSuffixes: string[];
+
+  assignmentRoots: string[];
+  assignmentPrefixes: string[];
+  assignmentSuffixes: string[];
 }
 
 export interface ResolvedMorphology {
@@ -62,6 +105,22 @@ export interface ResolvedMorphology {
   alternatePrefix: string;
   iteratorSuffix: string;
   negationPrefix: string;
+  
+  arithmeticPrefix: string;
+  arithmeticSuffix: string;
+
+  comparisonPrefix: string;
+  comparisonSuffix: string;
+
+  logicPrefix: string;
+  logicSuffix: string;
+
+  builtinPrefix: string;
+  builtinSuffix: string;
+
+  assignmentRoot: string;
+  assignmentPrefix: string;
+  assignmentSuffix: string;
 }
 
 export interface SyntaxBiasConfig {
@@ -95,7 +154,10 @@ export type AssignmentStyleType =
   | "equals"
   | "arrow"
   | "set_prefix"
-  | "put_in";
+  | "put_in"
+  | "word_infix"
+  | "word_prefix"
+  | "word_suffix";
 
 export type FunctionStyleType =
   | "keyword_name_params_block"
@@ -143,6 +205,7 @@ export interface GeneratedSyntaxConfig {
 
 export interface GeneratedSymbolConfig {
   assignmentToken?: string;
+  assignmentWord?: string;
   blockOpenToken?: string;
   blockCloseToken?: string;
   argOpenToken: string;
@@ -187,11 +250,13 @@ export interface GeneratedPlanetLanguage {
   roots: SemanticRoots;
 
   keywords: KeywordMap;
+  operators: OperatorMap;
+  builtins: BuiltinMap;
+
   syntax: GeneratedSyntaxConfig;
   symbols: GeneratedSymbolConfig;
   cosmetic: GeneratedCosmeticConfig;
 }
-
 // ---------- AST types for your canonical subset ----------
 
 export interface ProgramNode {
@@ -267,6 +332,22 @@ export interface ExprStatementNode {
   expression: ExprNode;
 }
 
+export interface StringLiteralNode {
+  type: "StringLiteral";
+  value: string;
+}
+
+export interface ListLiteralNode {
+  type: "ListLiteral";
+  elements: ExprNode[];
+}
+
+export interface IndexExprNode {
+  type: "IndexExpr";
+  target: ExprNode;
+  index: ExprNode;
+}
+
 // ---------- Expressions ----------
 
 export type ExprNode =
@@ -274,6 +355,9 @@ export type ExprNode =
   | NumberLiteralNode
   | BooleanLiteralNode
   | NoneLiteralNode
+  | StringLiteralNode
+  | ListLiteralNode
+  | IndexExprNode
   | BinaryExprNode
   | UnaryExprNode
   | CallExprNode;
