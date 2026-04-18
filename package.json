@@ -12,6 +12,7 @@
   "dependencies": {
     "@fontsource/fira-code": "^5.2.7",
     "@tailwindcss/vite": "^4.2.2",
+    "pyodide": "^0.29.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-router": "^7.14.1",

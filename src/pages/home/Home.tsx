@@ -1,19 +1,23 @@
+import Codebox from "../../components/Codebox";
 import Textbox from "../../components/Textbox";
-
+import {useState} from "react"
 
 function Home() {
+  // code output
+  const [output, setOutput] = useState("Waiting for code...");
+
   return (
     // bg image
     <div className="relative min-h-screen bg-[url('/bg.png')] bg-cover bg-center bg-no-repeat overflow-hidden">
-      <div className="flex h-full w-full">
+      <div className="flex max-w-[1600px] mx-auto px-8 gap-10">
         {/* left */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col gap-6">
 
           {/* logo */}
-          <div><img src="logo.png" alt="Logo" /></div>
+          <div><img src="logo.png" alt="Logo" className="mx-auto w-140"/></div>
 
           {/* python and alien code */}
-          <div className="flex">
+          <div className="flex gap-6">
             <div className="flex-1">
               <Textbox
                 lightcol="#005DA9"
@@ -44,13 +48,18 @@ function Home() {
         </div>
 
         {/* right */}
-        <div className="flex-1">
-          <div>Code</div>
+        <div className="flex-1 flex flex-col gap-6">
+          <div>
+            <Codebox
+                lightcol="#5E5E5E"
+                darkcol="#2E2E2E"
+                headerimage="code.png" onOutput={setOutput}></Codebox>
+          </div>
           <div>
             <Textbox
                 lightcol="#5E5E5E"
                 darkcol="#2E2E2E"
-                text="Output"
+                text={output}
                 headerimage="output.png"
               />
           </div>
