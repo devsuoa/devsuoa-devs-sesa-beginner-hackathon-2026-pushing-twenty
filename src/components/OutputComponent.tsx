@@ -59,7 +59,7 @@ const OutputComponent = () => {
         <button
         onClick={runCode}
         disabled={!pyodideReady}
-        className="bg-green-600 hover:bg-green-500 disabled:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg text-sm w-fit"
+        className="bg-green-600 hover:bg-green-500 hover:animate-pulse disabled:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg text-sm w-fit transition duration:300"
         >
             {pyodideReady ? "submit" : "loading python..."}
         </button>

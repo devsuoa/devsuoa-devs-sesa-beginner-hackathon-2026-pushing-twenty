@@ -1,12 +1,12 @@
 import React from 'react'
-
+import Image from 'react'
 const InfoComponent = () => {
   return (
     <div className="flex-1 bg-[#2a2a2a] rounded-2xl p-3 flex flex-col gap-3">
 
         {/* Title */}
         <h1 className="text-center text-5xl tracking-widest text-green-400">
-        GLORPYTHON
+            GLORPYTHON
         </h1>
 
         {/* Code panels */}
@@ -30,7 +30,7 @@ print(sum)`}</pre>
             <div className="bg-[#1f5c29] text-white text-s text-center py-2 tracking-widest font-bold">
             *** ALIEN CODE ***
             </div>
-            <div className="bg-[#3a9447] m-2 rounded-xl p-3">
+            <div className="bg-[#3a9447] transition m-2 rounded-xl p-3">
             <pre className="text-white text-xs leading-relaxed m-0">{`nums eats [1,2,3]
 sum eats 0
 i eats nums slowly:
@@ -47,6 +47,10 @@ print eats sum`}</pre>
         SQUARE OF THE LENGTH OF nums.</p>
         <p className="mb-2">Assume nums is already defined.</p>
         <p>(Hint: you cannot use any +-*/ or **)</p>
+        </div>
+
+        <div className="group mb-2 h-10 flex">
+            <img className="h-40 ml-40" src="glorpcat1.png"/>
         </div>
     </div>
   )
