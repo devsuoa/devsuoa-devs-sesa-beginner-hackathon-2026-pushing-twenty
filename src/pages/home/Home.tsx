@@ -3,7 +3,7 @@ import {useState, useEffect, useRef} from "react";
 import LevelComponent from "../../components/LevelComponent";
 import { main } from "./solarsystem.js";
 
-function Home() {
+export default function Home() {
     const lvlNum = 4;
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
