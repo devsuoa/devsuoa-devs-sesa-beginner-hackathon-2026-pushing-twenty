@@ -55,15 +55,15 @@ export function createScene() {
 
     // Planets
     const planetData = [
-        { level: 1, id: 1, radius: 1.1, orbitR: 14, speed:  0.8, angle:   0 * (Math.PI / 180), tilt: 0.2,  color: 0xff6644, emissive: 0x441100, texture: '/textures/texture1.webp'},
-        { level: 1, id: 2, radius: 1.1, orbitR: 14, speed:  0.8, angle: 120 * (Math.PI / 180), tilt: 0.2,  color: 0xff6644, emissive: 0x441100, texture: '/textures/texture1.webp'},
-        { level: 1, id: 3, radius: 1.1, orbitR: 14, speed:  0.8, angle: 240 * (Math.PI / 180), tilt: 0.2,  color: 0xff6644, emissive: 0x441100, texture: '/textures/texture1.webp'},
-        { level: 2, id: 4, radius: 1.5, orbitR: 24, speed: 0.45, angle:   0 * (Math.PI / 180), tilt: 0.35, color: 0x44aaff, emissive: 0x001133, texture: '/textures/texture2.webp' },
-        { level: 2, id: 5, radius: 1.5, orbitR: 24, speed: 0.45, angle: 120 * (Math.PI / 180), tilt: 0.35, color: 0x44aaff, emissive: 0x001133, texture: '/textures/texture2.webp' },
-        { level: 2, id: 6, radius: 1.5, orbitR: 24, speed: 0.45, angle: 240 * (Math.PI / 180), tilt: 0.35, color: 0x44aaff, emissive: 0x001133, texture: '/textures/texture2.webp' },
-        { level: 3, id: 7, radius: 1.2, orbitR: 36, speed: 0.25, angle:   0 * (Math.PI / 180), tilt: 0.15, color: 0x88dd55, emissive: 0x112200, texture: '/textures/texture3.webp'},
-        { level: 3, id: 8, radius: 1.2, orbitR: 36, speed: 0.25, angle: 120 * (Math.PI / 180), tilt: 0.15, color: 0x88dd55, emissive: 0x112200, texture: '/textures/texture3.webp'},
-        { level: 3, id: 9, radius: 1.2, orbitR: 36, speed: 0.25, angle: 240 * (Math.PI / 180), tilt: 0.15, color: 0x88dd55, emissive: 0x112200, texture: '/textures/texture3.webp'},
+        { level: 1, id: 1, radius: 1.1, orbitR: 14, speed:  0.8, angle:   0 * (Math.PI / 180), tilt: 0.2,  color: 0xff6644, emissive: 0x441100, texture: '/textures/planet1.png'},
+        { level: 1, id: 2, radius: 1.1, orbitR: 14, speed:  0.8, angle: 120 * (Math.PI / 180), tilt: 0.2,  color: 0xff6644, emissive: 0x441100, texture: '/textures/planet2.png'},
+        { level: 1, id: 3, radius: 1.1, orbitR: 14, speed:  0.8, angle: 240 * (Math.PI / 180), tilt: 0.2,  color: 0xff6644, emissive: 0x441100, texture: '/textures/planet9.png'},
+        { level: 2, id: 4, radius: 1.5, orbitR: 24, speed: 0.45, angle:   0 * (Math.PI / 180), tilt: 0.35, color: 0x44aaff, emissive: 0x001133, texture: '/textures/planet4.png' },
+        { level: 2, id: 5, radius: 1.5, orbitR: 24, speed: 0.45, angle: 120 * (Math.PI / 180), tilt: 0.35, color: 0x44aaff, emissive: 0x001133, texture: '/textures/planet8.png' },
+        { level: 2, id: 6, radius: 1.5, orbitR: 24, speed: 0.45, angle: 240 * (Math.PI / 180), tilt: 0.35, color: 0x44aaff, emissive: 0x001133, texture: '/textures/planet6.png' },
+        { level: 3, id: 7, radius: 1.2, orbitR: 36, speed: 0.25, angle:   0 * (Math.PI / 180), tilt: 0.15, color: 0x88dd55, emissive: 0x112200, texture: '/textures/planet7.png'},
+        { level: 3, id: 8, radius: 1.2, orbitR: 36, speed: 0.25, angle: 120 * (Math.PI / 180), tilt: 0.15, color: 0x88dd55, emissive: 0x112200, texture: '/textures/planet3.png'},
+        { level: 3, id: 9, radius: 1.2, orbitR: 36, speed: 0.25, angle: 240 * (Math.PI / 180), tilt: 0.15, color: 0x88dd55, emissive: 0x112200, texture: '/textures/planet5.png'},
     ];
 
     const planets = planetData.map(planet => {
