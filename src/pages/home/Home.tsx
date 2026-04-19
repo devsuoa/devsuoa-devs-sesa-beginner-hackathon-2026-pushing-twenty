@@ -43,14 +43,15 @@ export default function Home() {
                 </div>
             </header>
             <section className="relative w-full h-screen">
-                <div
-                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90vw] z-50"
-                    style={{
-                        maxHeight: isVisible ? "100vh" : "0",
-                        overflow: "hidden",
-                        transition: "max-height 0.3s ease",
-                    }}
-                >
+               <div
+  className="absolute top-1/2 left-1/2 w-[90vw] z-50"
+  style={{
+    maxHeight: isVisible ? "100vh" : "0",
+    overflow: "hidden",
+    transition: "max-height 0.3s ease",
+    transform: "translate(calc(-50% - 40px), -50%)",
+  }}
+>
                     <LevelComponent
                     key={mountKey}
                     onClose={() => handleClose()}
