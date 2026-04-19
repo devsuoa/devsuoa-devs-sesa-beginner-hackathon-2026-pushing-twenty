@@ -16,7 +16,7 @@ const LEVEL_CONFIGS: Record<number, {
     task: `Translate this Python code into Alien code:\nx = 2\ny = x\ny += x`,
   },
   2: {
-    pythonCode: `x = 5\ny = x - 3\nz = x ** 2\nprint(z)`,
+    pythonCode: `x = 5\ny = x - 3\nz = y ** 2\nprint(z)`,
     alienCode: `x :) 1 + 1 + 1 + 1 + 1\ny :) x - 1 - 1 - 1\nz :) y ^ (1 + 1) \nz :(`,
     task: `Translate this Python code to Alien code:\nx = 2\ny = x ** (-2)\nprint(y)`,
   },
