@@ -6,7 +6,7 @@ import { createScene } from "./scene.js";
 const ZOOM_DIST = 5;
 const TWEEN_SPEED = 0.07;
 
-export function main( canvas, onPlanetClick, onPlanetFocus ) {
+export function main( canvas, onPlanetFocus ) {
 
     // --- Initialisation ---
 
@@ -18,7 +18,7 @@ export function main( canvas, onPlanetClick, onPlanetFocus ) {
 
     const { targetOffset, currentOffset } = setupParallax( canvas );
 
-    const { focus, zoomOut } = setupFocus( canvas, camera, planets, basePosition, onPlanetClick );
+    const { focus, zoomOut } = setupFocus( canvas, camera, planets, basePosition );
 
     const currentLookAt = new THREE.Vector3(0, 0, 0);
     const origin = new THREE.Vector3(0, 0, 0);
