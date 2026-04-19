@@ -39,7 +39,7 @@ export function setupParallax( canvas ) {
     
 }
 
-export function setupFocus( canvas, camera, planets, basePosition ) {
+export function setupFocus( canvas, camera, planets, basePosition, onPlanetClick ) {
     
     const focus = {
         raycaster:    new THREE.Raycaster(),
@@ -66,6 +66,7 @@ export function setupFocus( canvas, camera, planets, basePosition ) {
             focus.paused   = true;
             focus.tweening  = true;
             focus.popupFired = false;
+            onPlanetClick()
         } 
         else {
             zoomOut();

@@ -13,16 +13,14 @@ header {
     
     .header-brand {
         width: 80%;
-        margin-top: 40px;
+        margin-top: 0px;
         display: flex;
         justify-content: center;
 
-        h1 {
-            font-weight: 250;
-            font-size: 4rem;
-            line-height: 100%;
-            color: green;
+        img {
+            width: 35%;
         }
+        
     }
 
 }

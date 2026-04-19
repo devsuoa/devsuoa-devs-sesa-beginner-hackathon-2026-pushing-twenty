@@ -1,13 +1,3 @@
-* {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    font-size: 100%;
-    vertical-align: baseline;
-    overflow: hidden;
-    /* outline: 1px solid red !important; */
-}
-
 html, body {
     width: 100%;
     height: 100%;
@@ -23,20 +13,21 @@ header {
     
     .header-brand {
         width: 80%;
-        margin-top: 40px;
+        margin-top: 0px;
         display: flex;
         justify-content: center;
 
-        h1 {
-            font-weight: 250;
-            font-size: 4rem;
-            line-height: 100%;
-            color: green;
+        img {
+            width: 35%;
         }
+        
     }
 
 }
 
+.cleardiv {
+    clear: both;
+}
 
 .solarsystem {
     width: 100%;
@@ -44,3 +35,20 @@ header {
     display: block;
     position: absolute;
 }
+
+button {
+    z-index: 100;
+    color: white;
+}
+
+/*
+{
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    overflow: hidden;
+    // outline: 1px solid red !important;
+}
+*/

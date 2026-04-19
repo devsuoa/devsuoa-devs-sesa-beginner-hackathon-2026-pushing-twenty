@@ -35,7 +35,7 @@ export default function Home() {
             <header style={{
                 transition: "opacity 0.4s ease",
                 opacity: hideUI ? 0 : 1,
-                pointerEvents: hideUI ? "none" : "auto",
+                pointerEvents: hideUI ? "none" : "auto",                
             }}
             >
                 <div className={styles["header-brand"]}>
@@ -54,7 +54,7 @@ export default function Home() {
                     <LevelComponent
                     key={mountKey}
                     onClose={() => handleClose()}
-                    lvl={getLevelRef.current ? getLevelRef.current() : 0}
+                    selectedLevel={getLevelRef.current ? getLevelRef.current() : 0}
                     />
                 </div>
                 <canvas ref={canvasRef} className={styles.solarsystem}></canvas>
@@ -62,3 +62,6 @@ export default function Home() {
         </div>
     );
 }
+const onPlanetClick = () => {
+         setPlanetClicked(true);
+    }

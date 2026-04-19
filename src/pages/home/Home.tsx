@@ -35,7 +35,7 @@ export default function Home() {
             <header style={{
                 transition: "opacity 0.4s ease",
                 opacity: hideUI ? 0 : 1,
-                pointerEvents: hideUI ? "none" : "auto",
+                pointerEvents: hideUI ? "none" : "auto",                
             }}
             >
                 <div className={styles["header-brand"]}>
@@ -62,3 +62,6 @@ export default function Home() {
         </div>
     );
 }
+const onPlanetClick = () => {
+         setPlanetClicked(true);
+    }

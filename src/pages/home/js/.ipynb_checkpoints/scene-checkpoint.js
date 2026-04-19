@@ -56,7 +56,7 @@ export function createScene() {
     // Planets
     const planetData = [
         { level: 1, id: 1, radius: 1.1, orbitR: 14, speed:  0.8, angle:   0 * (Math.PI / 180), tilt: 0.2,  color: 0xff6644, emissive: 0x441100, texture: '/textures/texture1.webp'},
-        { level: 1, id: 2, radius: 1.1, orbitR: 14, speed:  0.8, angle: 120 * (Math.PI / 180),  tilt: 0.2,  color: 0xff6644, emissive: 0x441100, texture: '/textures/texture1.webp'},
+        { level: 1, id: 2, radius: 1.1, orbitR: 14, speed:  0.8, angle: 120 * (Math.PI / 180), tilt: 0.2,  color: 0xff6644, emissive: 0x441100, texture: '/textures/texture1.webp'},
         { level: 1, id: 3, radius: 1.1, orbitR: 14, speed:  0.8, angle: 240 * (Math.PI / 180), tilt: 0.2,  color: 0xff6644, emissive: 0x441100, texture: '/textures/texture1.webp'},
         { level: 2, id: 4, radius: 1.5, orbitR: 24, speed: 0.45, angle:   0 * (Math.PI / 180), tilt: 0.35, color: 0x44aaff, emissive: 0x001133, texture: '/textures/texture2.webp' },
         { level: 2, id: 5, radius: 1.5, orbitR: 24, speed: 0.45, angle: 120 * (Math.PI / 180), tilt: 0.35, color: 0x44aaff, emissive: 0x001133, texture: '/textures/texture2.webp' },
